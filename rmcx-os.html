@@ -1,0 +1,361 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RMCx OS - สายการผลิตอัตโนมัติ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="CPACTheme.css">
+  <style>
+    :lang(th){font-family:'Prompt','Space Grotesk',system-ui,-apple-system,sans-serif;}
+    :lang(en){font-family:'Space Grotesk','Prompt',system-ui,-apple-system,sans-serif;}
+    html,body{width:100%;height:100%;overflow:hidden;}
+    body{padding:10px;max-width:none;margin:0 auto;background:#f5f9fc;}
+    .page-scroll{width:100%;height:100vh;overflow:auto;}
+    .canvas{width:100%;max-width:100vw;min-width:0;min-height:100vh;}
+    header{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;}
+    h1{margin:0;font-size:20px;}
+    .sub{margin:0;color:var(--muted);}
+    .board{
+      display:grid;
+      grid-template-columns:1fr 1.3fr 0.7fr;
+      grid-template-rows:140px 1fr 170px 180px;
+      grid-template-areas:
+        "truck dp silo"
+        "machine machine machine"
+        "weigh weigh weigh"
+        "quality quality quality";
+      gap:12px;
+      min-height:640px;
+      height:auto;
+      width:100%;
+      min-width:0;
+    }
+    .col-stack{display:grid;gap:8px;height:100%;grid-auto-rows:minmax(200px, auto);}
+    .machine-stack{display:grid;gap:8px;height:100%;}
+    .side-stack{display:grid;gap:8px;height:100%;}
+    .section-title{display:flex;align-items:center;gap:8px;font-weight:700;margin:0 0 6px;font-size:13px;}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);}
+    /* Stock vertical bars */
+    .silo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:4px;align-items:end;overflow:visible;}
+    .silo-bar{position:relative;height:120px;border:1px solid var(--line);border-radius:10px;padding:4px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;background:linear-gradient(180deg,#f7fbff 0%,#fff 100%);box-shadow:0 3px 8px rgba(24,156,216,0.08);overflow:visible;}
+    .silo-fill{position:relative;width:100%;height:90px;border-radius:9px;background:#e9f4fb;overflow:hidden;}
+    .silo-fill span.level{position:absolute;bottom:0;left:0;width:100%;}
+    .silo-fill .forecast{position:absolute;bottom:0;left:0;width:100%;background:rgba(90,104,115,0.35);}
+    .silo-value{position:absolute;top:8px;left:50%;transform:translateX(-50%);color:#fff;font-weight:800;font-size:13px;text-shadow:0 1px 4px rgba(0,0,0,0.35);}
+    .silo-label{font-weight:800;font-size:12px;}
+    .silo-meta{font-size:11px;color:var(--muted);}
+    .tooltip{
+      position:absolute;
+      top:100%;
+      left:50%;
+      transform:translate(-50%,8px);
+      background:#fff;
+      border:1px solid var(--line);
+      box-shadow:0 12px 28px rgba(24,156,216,0.18);
+      border-radius:12px;
+      padding:10px;
+      width:280px;
+      display:none;
+      z-index:8;
+    }
+    .tooltip h4{margin:0 0 6px;font-size:13px;}
+    .tooltip .spark{margin:6px 0;}
+    .tooltip small{color:var(--muted);}
+    .silo-bar:hover .tooltip{display:block;}
+    /* Truck board compact */
+    .truck-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:4px;align-content:start;min-height:90px;max-height:140px;overflow:auto;}
+    .truck-group{border:1px solid var(--line);border-radius:10px;padding:5px;background:#fff;box-shadow:0 4px 10px rgba(24,156,216,0.08);}    
+    .truck-header{display:flex;align-items:center;gap:4px;font-weight:700;margin-bottom:4px;font-size:11px;}
+    .truck-row{display:flex;gap:4px;flex-wrap:wrap;}
+    .truck-icon{display:inline-flex;align-items:center;gap:3px;padding:5px 6px;border:1px solid var(--line);border-radius:8px;background:#f7fbff;font-size:10px;font-weight:700;}
+    .truck-svg{width:16px;height:11px;fill:currentColor;}
+    .queue{color:var(--muted);} .load{color:var(--accent);} .tosite{color:#0b7ac8;} .onsite{color:var(--warn);} .return{color:var(--success);}    
+    /* Weigh section */
+    .weigh-card{padding:14px;}
+    .weigh-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;}
+    .weigh-row{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff;box-shadow:0 6px 12px rgba(24,156,216,0.08);position:relative;min-height:96px;display:grid;place-content:center;gap:6px;}
+    .weigh-material{font-weight:800;text-align:center;font-size:13px;}
+    .weigh-actual{font-size:26px;font-weight:800;text-align:center;}
+    .weigh-error{font-size:12px;font-weight:700;text-align:center;}
+    /* Machine visualize */
+    .plant-wrap{position:relative;border:1px solid var(--line);border-radius:12px;min-height:420px;overflow:hidden;box-shadow:0 10px 20px rgba(24,156,216,0.12);background:#0f172a url('assets/Concrete plant screen display.jpeg') center/cover no-repeat;}
+    .plant-overlay{position:absolute;inset:0;background:radial-gradient(900px 900px at 25% 20%,rgba(255,255,255,0.05),transparent 55%),radial-gradient(900px 900px at 75% 15%,rgba(255,255,255,0.05),transparent 60%);}    
+    .stage-pill{position:absolute;display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,0.92);font-weight:700;font-size:11px;box-shadow:0 6px 14px rgba(24,156,216,0.12);}    
+    .stage-pill.active{border-color:var(--accent);color:var(--accent);}
+    .stage-pill.done{border-color:var(--success);color:var(--success);}
+    .stage-pill.alert{border-color:rgba(229,57,85,0.45);color:var(--danger);background:rgba(229,57,85,0.12);}    
+    /* Quality cards */
+    .quality-visual{display:grid;gap:8px;}
+    .quality-main{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;}
+    .card{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff;box-shadow:0 8px 16px rgba(24,156,216,0.1);}    
+    .sub-highlight{border:1px solid var(--accent);background:rgba(24,156,216,0.08);color:var(--accent);font-weight:700;padding:8px 12px;border-radius:12px;display:inline-flex;align-items:center;gap:6px;font-size:14px;}
+    .sub-highlight::before{content:"★";}
+    .pill-mini{display:inline-flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:#f7fbff;font-weight:700;font-size:11px;margin:2px;}
+    @media(max-width:1100px){.layout{grid-template-columns:1fr;}.quality-visual{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <div class="page-scroll">
+  <div class="canvas">
+  <header>
+    <div>
+      <h1>RMCx OS | หน้าจอผลิตอัตโนมัติ</h1>
+      <p class="sub">สถานีผสมคอนกรีตอัตโนมัติ | อัปเดต: 10/2/2026 14:32</p>
+    </div>
+    <div class="float-actions">
+      <button class="button ghost">โหมดแมนนวล</button>
+      <button class="button primary">หยุดฉุกเฉิน</button>
+    </div>
+  </header>
+
+  <div class="board">
+    <div class="cpac-surface" style="padding:8px;grid-area:truck;overflow:hidden;">
+      <p class="section-title"><span class="dot"></span> สถานะรถโม่ (compact)</p>
+      <div class="truck-board" id="truck-board"></div>
+    </div>
+
+    <section class="panel" style="padding:8px;grid-area:dp;overflow:auto;">
+      <p class="section-title"><span class="dot"></span> DP Concrete ที่เข้ามาแล้ว</p>
+      <table class="table" style="margin-top:6px;font-size:12px;table-layout:fixed;">
+        <thead>
+          <tr>
+            <th>DP</th><th>Site</th><th>สูตรคอนกรีต</th><th>Slump</th><th>รถโม่</th><th>ปริมาณ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>#45012</td><td>MRT West</td><td>CPAC 280 ksc</td><td>10±2</td><td>CP-202</td><td>5 m³</td></tr>
+          <tr><td>#45013</td><td>Condo Prime</td><td>CPAC 320 ksc</td><td>7±1</td><td>CP-203</td><td>4.5 m³</td></tr>
+          <tr><td>#45014</td><td>โรงงานบางปู</td><td>CPAC 240 ksc</td><td>12±2</td><td>CP-206</td><td>4 m³</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="cpac-surface" style="padding:8px;grid-area:silo;display:grid;grid-auto-rows:auto 1fr;overflow:visible;">
+      <p class="section-title"><span class="dot"></span> ปริมาณวัตถุดิบ Realtime (แยก Silo)</p>
+      <div class="silo-grid" id="silo-grid"></div>
+    </div>
+
+    <section class="cpac-surface machine-card" style="padding:12px;grid-area:machine;">
+      <p class="section-title"><span class="dot"></span> สถานะการทำงานของเครื่องจักรบนภาพเครื่อง</p>
+      <div class="plant-wrap">
+        <div class="plant-overlay"></div>
+        <div class="stage-pill done" style="top:22%;left:14%;">ชั่งน้ำหนักหิน</div>
+        <div class="stage-pill active" style="top:32%;left:44%;">ชั่งทราย · เหลือ 15 วิ</div>
+        <div class="stage-pill" style="top:46%;left:62%;">ชั่งปูน</div>
+        <div class="stage-pill" style="top:60%;left:54%;">เติมน้ำ</div>
+        <div class="stage-pill" style="top:70%;left:35%;">ผสมคอนกรีต</div>
+        <div class="stage-pill" style="top:64%;left:12%;">เทลงโม่</div>
+        <div class="stage-pill" style="top:46%;left:24%;">ชั่งน้ำหนักสุดท้าย</div>
+        <div class="stage-pill alert" style="top:18%;left:72%;">เซนเซอร์น้ำผิดพลาด</div>
+      </div>
+      <div class="visual" style="margin-top:8px;display:grid;grid-template-columns:2fr 1fr;gap:8px;">
+        <div class="progress-card">
+          <strong>ภาพรวมรอบผลิต</strong>
+          <div class="progress-bar"><span id="mix-progress" style="width:42%"></span></div>
+          <p class="audio-note">คิวที่ 24/32 | ETA อีก 3:15 นาที</p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+            <span class="badge green">สายพาน A ปกติ</span>
+            <span class="badge orange">สไลด์เกท B ช้า</span>
+            <span class="badge red" id="abnormal-flag">เซนเซอร์น้ำผิดพลาด</span>
+          </div>
+        </div>
+        <div class="cpac-surface" style="padding:10px;">
+          <strong>แจ้งเตือน Abnormal</strong>
+          <div style="display:grid;gap:6px;margin-top:6px;">
+            <div class="alert-flag">สไลด์เกท B ตอบสนองช้า (2.1 วินาที)</div>
+            <div class="alert-flag">น้ำชั่งจริงเบี่ยง 3% จากสูตร</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cpac-surface weigh-card" style="padding:10px;grid-area:weigh;">
+      <p class="section-title"><span class="dot"></span> น้ำหนักชั่ง Realtime</p>
+      <div class="weigh-grid" id="weigh-grid"></div>
+    </section>
+
+    <section class="panel" style="padding:12px;grid-area:quality;">
+      <p class="section-title"><span class="dot"></span> คุณภาพวัตถุดิบ</p>
+      <div class="quality-visual">
+        <div class="quality-main">
+          <div class="card">
+            <strong class="sub-highlight">Sub product วิศวกรกำหนด (P/I/H)</strong>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+              <span class="pill-mini">แนะนำ: P</span>
+            </div>
+            <div style="margin-top:10px;font-size:12px;color:var(--muted);">ข้อมูลประกอบ: ใช้ชุดทดลองรอบ 15 วัน</div>
+          </div>
+          <div class="card">
+            <strong class="sub-highlight">Sub product คำนวณจากคุณภาพวัตถุดิบ (P/I/H)</strong>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+              <span class="pill-mini" style="border-color:rgba(229,57,85,0.5);color:var(--danger);">ระบบ: H (+1)</span>
+            </div>
+            <div style="margin-top:10px;font-size:12px;color:var(--muted);">หมายเหตุ: ระบบต่างจากวิศวกร +1 ขั้น</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+              <span class="pill-mini">FM ทราย: 2.6</span>
+              <span class="pill-mini">ความชื้น: 3.2%</span>
+              <span class="pill-mini">%ฝุ่นหิน: 0.8%</span>
+              <span class="pill-mini">%ฝุ่นทราย: 1.1%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="pop-alert">
+    <div class="pop">
+      <strong>DP ใหม่เข้ามาแล้ว</strong>
+      DP #45015 | 9 m³ | Slump 10±2 | รถโม่ CP-207
+    </div>
+    <div class="pop">
+      <strong>Alarm:</strong> เซนเซอร์น้ำผิดพลาด โปรดตรวจสอบ
+    </div>
+    <audio autoplay loop muted id="alert-audio">
+      <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
+    </audio>
+    <p class="audio-note">เสียงแจ้งเตือนเปิด (จำลอง)</p>
+  </div>
+
+  <script>
+    // Hourly sparkline with forecast jump on inbound hour, locked 06:00-20:00
+    function buildHourlySeries(s){
+      const hours = Array.from({length:15},(_,i)=>6+i); // 06 → 20
+      const inboundHour = s.inbound && s.inbound !== '--' ? parseInt(s.inbound.split(':')[0],10) : null;
+      const start = s.level;
+      const forecastLevel = s.forecast ?? s.level;
+      let series = [];
+      let current = start;
+      hours.forEach(h=>{
+        if(inboundHour!==null && h === inboundHour){
+          current = forecastLevel; // jump up when refill happens
+        } else if(inboundHour!==null && h > inboundHour){
+          current = Math.max(5, current - 1.0); // gentle consumption after refill
+        } else {
+          current = Math.max(5, current - 1.2); // consumption before refill
+        }
+        series.push(parseFloat(current.toFixed(1)));
+      });
+      return { hours, series };
+    }
+
+    function makeSparklineHourly(s){
+      const { hours, series } = buildHourlySeries(s);
+      const w=260,h=80,pad=6;
+      const max=Math.max(...series), min=Math.min(...series);
+      const denom = (max-min)||1;
+      const pts = series.map((v,i)=>{
+        const x = pad + (w-2*pad) * (i/(hours.length-1||1));
+        const y = h-pad - ((v-min)/denom)*(h-2*pad);
+        return `${x},${y}`;
+      }).join(' ');
+      // forecast line is implicit in jump; highlight inbound hour with marker
+      const inboundHour = s.inbound && s.inbound!=='--' ? parseInt(s.inbound.split(':')[0],10) : null;
+      const inboundX = inboundHour!==null ? pad + (w-2*pad) * ((inboundHour-6)/(hours.length-1||1)) : null;
+      return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+        <polyline fill="none" stroke="#189cd8" stroke-width="2.2" points="${pts}" />
+        ${inboundHour!==null ? `<line x1="${inboundX}" x2="${inboundX}" y1="${h-pad}" y2="${pad}" stroke="#0fb36a" stroke-width="2" stroke-dasharray="4 3"/>` : ''}
+      </svg>`;
+    }
+
+    const colorByLevel = lvl => lvl>70 ? '#0fb36a' : lvl>=41 ? '#f59e0b' : '#e53955';
+
+    // Stock and timeline data
+    const siloData = [
+      { name:'หิน 3/4', level:72, ton: 82, timeline:['06:00','07:00','08:00','09:00','10:00','11:00'], vals:[78,76,74,72,71,69], inbound:'12:30', forecast:82 },
+      { name:'หิน 1/2', level:54, ton: 64, timeline:['06:00','07:00','08:00','09:00','10:00','11:00'], vals:[60,59,57,56,55,54], inbound:'--', forecast:null },
+      { name:'ทรายหยาบ', level:61, ton: 73, timeline:['06:00','07:00','08:00','09:00','10:00','11:00'], vals:[70,68,66,64,63,61], inbound:'13:10', forecast:78 },
+      { name:'ทรายละเอียด', level:33, ton: 38, timeline:['06:00','07:00','08:00','09:00','10:00','11:00'], vals:[45,42,39,36,34,33], inbound:'11:40', forecast:65 },
+      { name:'ปูน', level:18, ton: 22, timeline:['06:00','07:00','08:00','09:00','10:00','11:00'], vals:[28,25,23,21,19,18], inbound:'12:05', forecast:55 }
+    ];
+
+    const siloGrid = document.getElementById('silo-grid');
+    siloData.forEach(s => {
+      const forecastHeight = s.forecast ? Math.min(170, (s.forecast/100)*170) : 0;
+      const levelHeight = Math.min(170, (s.level/100)*170);
+      const bar = document.createElement('div');
+      bar.className = 'silo-bar';
+      bar.innerHTML = `
+        <div class="silo-fill">
+          ${s.forecast ? `<div class="forecast" style="height:${forecastHeight}px"></div>`:''}
+          <span class="level" style="height:${levelHeight}px; background:${colorByLevel(s.level)};"></span>
+          <div class="silo-value">${s.level}% | ${s.ton}t</div>
+        </div>
+        <div class="silo-label">${s.name}</div>
+        <div class="silo-meta">ขาเข้า: ${s.inbound === '--' ? 'ยังไม่กำหนด' : s.inbound}</div>
+        <div class="tooltip">
+          <h4>${s.name}</h4>
+          ${makeSparklineHourly(s)}
+          <small>06:00 → 20:00${s.inbound?` | เติมรอบ ${s.inbound}`:''}</small>
+          <p style="margin:6px 0 0;font-size:12px;">${s.inbound && s.inbound!=='--' ? `คาดว่าจะขึ้นเป็น ${s.forecast??s.level}% เวลา ${s.inbound}` : 'ไม่มีรอบเติมวันนี้'}</p>
+        </div>`;
+      siloGrid.appendChild(bar);
+    });
+
+    // น้ำหนักชั่ง realtime mock
+    const weighData = [
+      { mat:'Cement', actual: 820 },
+      { mat:'หิน', actual: 1220 },
+      { mat:'ทราย', actual: 980 },
+      { mat:'น้ำยา', actual: 9.5 },
+      { mat:'น้ำ', actual: 160 }
+    ];
+    const weighGrid = document.getElementById('weigh-grid');
+    weighData.forEach(w=>{
+      // assume setting for error calc
+      const setting = { 'Cement':800,'หิน':1200,'ทราย':1000,'น้ำยา':10,'น้ำ':155 }[w.mat] || w.actual;
+      const diffPct = ((w.actual - setting)/setting*100).toFixed(1);
+      const pctColor = Math.abs(diffPct) > 2 ? '#e53955' : '#0fb36a';
+      const row = document.createElement('div');
+      row.className = 'weigh-row';
+      row.innerHTML = `
+        <div class="weigh-material">${w.mat}</div>
+        <div class="weigh-actual" style="color:${pctColor}">${w.actual}</div>
+        <div class="weigh-error" style="color:${pctColor}">%Error ${diffPct}%</div>
+      `;
+      weighGrid.appendChild(row);
+    });
+
+    // รถโม่ grouped by status
+    const trucks = [
+      {id:'CP-201', state:'queue'}, {id:'CP-206', state:'queue'},
+      {id:'CP-202', state:'load'}, {id:'CP-207', state:'load'},
+      {id:'CP-203', state:'to-site'}, {id:'CP-208', state:'to-site'},
+      {id:'CP-204', state:'onsite'}, {id:'CP-209', state:'onsite'},
+      {id:'CP-205', state:'return'}, {id:'CP-210', state:'return'}
+    ];
+    const stateLabels = {
+      'queue':'รอคิว', 'load':'รับคอนกรีต', 'to-site':'เดินทางไป', 'onsite':'Site งาน', 'return':'เดินทางกลับ'
+    };
+    const board = document.getElementById('truck-board');
+    ['queue','load','to-site','onsite','return'].forEach(st => {
+      const group = document.createElement('div');
+      group.className = 'truck-group';
+      group.innerHTML = `<div class="truck-header ${st}"><span class="dot" style="background:currentColor;width:8px;height:8px;"></span>${stateLabels[st]}</div>`;
+      const row = document.createElement('div');
+      row.className = 'truck-row';
+      trucks.filter(t=>t.state===st).forEach(t=>{
+        row.innerHTML += `
+          <span class="truck-icon ${st}">
+            <svg class="truck-svg" viewBox="0 0 24 14"><path d="M1 2h12v8H6l-1 2H3l1-2H1zm12 0h4l3 3v5h-2l-1 2h-2l1-2h-3z"/></svg>
+            ${t.id}
+          </span>`;
+      });
+      group.appendChild(row);
+      board.appendChild(group);
+    });
+
+    // Progress animation + abnormal blink
+    const progress = document.getElementById('mix-progress');
+    const abnormal = document.getElementById('abnormal-flag');
+    let pct = 42; let dir = 1;
+    setInterval(()=>{ pct += dir*3; if(pct>=95||pct<=20) dir*=-1; progress.style.width=pct+'%'; }, 700);
+    setInterval(()=>{ abnormal.style.opacity = abnormal.style.opacity === '0.3' ? '1' : '0.3'; }, 480);
+  </script>
+  </div><!-- /canvas -->
+  </div><!-- /page-scroll -->
+</body>
+</html>

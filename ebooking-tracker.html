@@ -1,0 +1,394 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>EBooking · ติดตามคำสั่งจอง | แผงควบคุมสรุปยอด</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="CPACTheme.css">
+  <style>
+    /* Dashboard metric strip: occupies roughly 1/4 of viewport height on load */
+    .dashboard {
+      min-height: 25vh;
+      display: grid;
+      align-content: center;
+      margin-bottom: 18px;
+    }
+    .metrics-shell {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .metric-card {
+      position: relative;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(24,156,216,0.12), rgba(24,156,216,0.04));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .metric-card::after {
+      content: '';
+      position: absolute;
+      right: -24px;
+      top: -18px;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle at center, rgba(24,156,216,0.16), transparent 62%);
+      transform: rotate(12deg);
+      pointer-events: none;
+    }
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
+    .metric-value {
+      margin: 2px 0 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .metric-sub {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 700;
+      background: rgba(24,156,216,0.12);
+      border: 1px solid rgba(24,156,216,0.3);
+      border-radius: 999px;
+      padding: 4px 10px;
+    }
+    .metric-sub.secondary {
+      color: var(--muted);
+      background: rgba(24,156,216,0.08);
+      border-color: var(--line);
+    }
+    @media (max-width: 720px) {
+      .metric-value { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="dashboard">
+    <div class="metrics-shell">
+      <div class="metric-card cpac-surface">
+        <p class="metric-label">จำนวนคำสั่งจอง (Orders)</p>
+        <div class="metric-value">428 <span class="metric-sub">วันนี้</span></div>
+      </div>
+      <div class="metric-card cpac-surface">
+        <p class="metric-label">จำนวน Site code ที่เปิด</p>
+        <div class="metric-value">18 <span class="metric-sub">วันนี้</span></div>
+      </div>
+      <div class="metric-card cpac-surface">
+        <p class="metric-label">คำสั่งที่ต้องเร่งด่วน/ติดตาม</p>
+        <div class="metric-value">32 <span class="metric-sub">วันนี้</span></div>
+      </div>
+      <div class="metric-card cpac-surface">
+        <p class="metric-label">คำสั่งที่มีประเด็นหรือปัญหา</p>
+        <div class="metric-value">14 <span class="metric-sub">วันนี้</span></div>
+      </div>
+      <div class="metric-card cpac-surface">
+        <p class="metric-label">มูลค่าคำสั่งซื้อรวม (วันนี้)</p>
+        <div class="metric-value">฿2.4M <span class="metric-sub">Today</span></div>
+        <div class="metric-value" style="margin-top:6px; font-size:16px; color:var(--muted);">
+          ฿58.2M <span class="metric-sub secondary">เดือนนี้</span>
+        </div>
+      </div>
+      <div class="metric-card cpac-surface">
+        <p class="metric-label">มาร์จิ้นคำสั่งซื้อรวม (วันนี้)</p>
+        <div class="metric-value">฿8.6M <span class="metric-sub">Margin 14.8%</span></div>
+      </div>
+    </div>
+  </section>
+  <div class="inline" style="justify-content: space-between; gap: 12px;">
+    <div>
+      <h1>ติดตามคำสั่งจอง EBooking — งานจองคอนกรีต</h1>
+      <p class="sub">ดึงคำสั่งจองจากทุกช่องทาง: โทรศัพท์, Site code, Line · ดูสถานะ DP และปริมาณที่เหลือแบบเรียลไทม์</p>
+    </div>
+    <div class="float-actions">
+      <button class="button ghost">Export Excel</button>
+      <button class="button primary">+ สร้างคำสั่งจองใหม่</button>
+    </div>
+  </div>
+
+  <div class="grid filters cpac-surface">
+    <div>
+      <label>ลูกค้า / ผู้รับเหมา / Line</label>
+      <input placeholder="พิมพ์ชื่อลูกค้า / ผู้รับเหมา / Line ID">
+    </div>
+    <div>
+      <label>Site code</label>
+      <input placeholder="พิมพ์รหัส Site code">
+    </div>
+    <div class="inline">
+      <div style="flex:1">
+        <label>ตั้งแต่วันที่</label>
+        <input type="date" value="2026-01-28">
+      </div>
+      <div style="flex:1">
+        <label>ถึงวันที่</label>
+        <input type="date" value="2026-02-04">
+      </div>
+    </div>
+    <div>
+      <label>สถานะงาน</label>
+      <select>
+        <option>ทั้งหมด</option>
+        <option>คำสั่งใหม่</option>
+        <option>เจรจาราคา</option>
+        <option>รอคอนเฟิร์มปริมาณ</option>
+        <option>ยืนยันแล้ว</option>
+        <option>กำลังจัดส่ง</option>
+        <option>เสร็จสิ้น DP ทั้งหมด</option>
+        <option>ค้างส่ง DP</option>
+      </select>
+    </div>
+    <div>
+      <label>สถานะยืนยัน/DP</label>
+      <select>
+        <option>ทั้งหมด</option>
+        <option>ออก DP แล้ว</option>
+        <option>รอเปิด DP</option>
+        <option>รอลูกค้ายืนยันปริมาณ</option>
+        <option>รอคอนเฟิร์ม Site</option>
+        <option>รอปริมาณรวม</option>
+        <option>รอ Site ยืนยัน</option>
+      </select>
+    </div>
+    <div class="inline" style="margin-top: 6px;">
+      <button class="button primary" style="flex:1;">ค้นหา</button>
+      <button class="button ghost" style="flex:1;">ล้างตัวกรอง</button>
+    </div>
+  </div>
+
+  <div class="panel cpac-surface">
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: 260px;">ลูกค้า</th>
+          <th style="width: 220px;">Site code</th>
+          <th>รายการสั่งคอนกรีต</th>
+          <th style="width:120px;">ปริมาณสั่ง (คิว)</th>
+          <th style="width:130px;">ปริมาณส่งแล้ว (คิว)</th>
+          <th>วันที่/เวลา เท</th>
+          <th style="width: 190px;">สถานะคำสั่ง</th>
+          <th style="width: 240px;">สถานะ DP (เที่ยว)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Customer group: เมกะโปร คอนสตรัคชั่น -->
+        <tr class="group-head" data-group="c1">
+          <td class="stack">
+            <div class="customer-head">
+              <button class="customer-toggle" data-group="c1">−</button>
+              <strong>บจก. เมกะโปร คอนสตรัคชั่น</strong>
+              <span class="alert-icon" title="กลุ่มนี้มีเงื่อนไขเฉพาะ/ติดตามใกล้ชิด">!</span>
+            </div>
+            <div class="muted">ลูกค้า: C009878 · 081-234-5678 · Line: @megapro</div>
+          </td>
+          <td colspan="7" class="muted">คำสั่ง 2 Site code — โปรเจ็กต์ใหญ่ มีเงื่อนไขส่งกลางคืน/ถนนแคบ</td>
+        </tr>
+        <tr data-group="c1" class="group-child">
+          <td class="muted">&nbsp;</td>
+          <td>
+            <div class="site-pill">
+              K00121 · หมู่บ้านชวนชื่น ซ.12
+              <span class="alert-icon small" title="มีข้อจำกัดความสูง/สายไฟ">!</span>
+            </div>
+          </td>
+          <td>คอนกรีต 280 KSC</td>
+          <td><strong>25.0</strong></td>
+          <td><strong>18.0</strong></td>
+          <td>28 ม.ค. 2026 เวลา 10:30</td>
+          <td class="status-col">
+            <button class="status-pill active">เข้าหน้างานแล้ว</button>
+          </td>
+          <td class="status-col">
+            <div class="status-list">
+              <div class="status-item">
+                <span class="pill-label">DP1</span>
+                <button class="status-pill done">เทแล้ว</button>
+              </div>
+              <div class="status-item">
+                <span class="pill-label">DP2</span>
+                <button class="status-pill active">กำลังเดินทาง</button>
+              </div>
+              <div class="status-item">
+                <span class="pill-label">DP3</span>
+                <button class="status-pill">รอจัดคิว</button>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr data-group="c1" class="group-child">
+          <td class="muted">&nbsp;</td>
+          <td><div class="site-pill">K00452 · บ้านเดี่ยว 45</div></td>
+          <td>คอนกรีต 260 KSC Slump 7</td>
+          <td><strong>20.0</strong></td>
+          <td><strong>0.0</strong></td>
+          <td>28 ม.ค. 2026 เวลา 13:00</td>
+          <td class="status-col">
+            <button class="status-pill done">ยืนยันปริมาณแล้ว</button>
+          </td>
+          <td class="status-col">
+            <div class="status-list">
+              <div class="status-item">
+                <span class="pill-label">DP1</span>
+                <button class="status-pill">รอจัดคิว</button>
+              </div>
+              <div class="status-item">
+                <span class="pill-label">DP2</span>
+                <button class="status-pill">รอเปิด DP</button>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Customer group: กัลยทรัพย์ก่อสร้าง -->
+        <tr class="group-head" data-group="c2">
+          <td class="stack">
+            <div class="customer-head">
+              <button class="customer-toggle" data-group="c2">−</button>
+              <strong>หจก. กัลยทรัพย์ก่อสร้าง</strong>
+            </div>
+            <div class="muted">ลูกค้า: C011204 · 089-555-1212 · Line: @kandasri</div>
+          </td>
+          <td colspan="7" class="muted">คำสั่ง 1 Site code</td>
+        </tr>
+        <tr data-group="c2" class="group-child">
+          <td class="muted">&nbsp;</td>
+          <td><div class="site-pill">K00901 · หมู่บ้านกัลป์ศรี 68</div></td>
+          <td>คอนกรีต 240 KSC Slump 7</td>
+          <td><strong>18.0</strong></td>
+          <td><strong>12.0</strong></td>
+          <td>28 ม.ค. 2026 เวลา 14:00</td>
+          <td class="status-col">
+            <button class="status-pill active">รอคอนเฟิร์มปริมาณ</button>
+          </td>
+          <td class="status-col">
+            <div class="status-list">
+              <div class="status-item">
+                <span class="pill-label">DP1</span>
+                <button class="status-pill done">เทแล้ว</button>
+              </div>
+              <div class="status-item">
+                <span class="pill-label">DP2</span>
+                <button class="status-pill active">กำลังเท/เดินทาง</button>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Customer group: เวิร์คไซต์ ดีเวลลอป -->
+        <tr class="group-head" data-group="c3">
+          <td class="stack">
+            <div class="customer-head">
+              <button class="customer-toggle" data-group="c3">−</button>
+              <strong>บจก. เวิร์คไซต์ ดีเวลลอป</strong>
+            </div>
+            <div class="muted">ลูกค้า: C007432 · 086-777-9090 · Line: @worksite</div>
+          </td>
+          <td colspan="7" class="muted">คำสั่ง 2 Site code</td>
+        </tr>
+        <tr data-group="c3" class="group-child">
+          <td class="muted">&nbsp;</td>
+          <td><div class="site-pill">K00234 · ถนนพระราม-บางบอน</div></td>
+          <td>คอนกรีต 300 KSC (Dry)</td>
+          <td><strong>35.0</strong></td>
+          <td><strong>0.0</strong></td>
+          <td>29 ม.ค. 2026 เวลา 08:00</td>
+          <td class="status-col">
+            <button class="status-pill active">รอเปิด DP</button>
+          </td>
+          <td class="status-col">
+            <div class="status-list">
+              <div class="status-item">
+                <span class="pill-label">DP1</span>
+                <button class="status-pill">รอเปิด DP</button>
+              </div>
+              <div class="status-item">
+                <span class="pill-label">DP2</span>
+                <button class="status-pill">รอเปิด DP</button>
+              </div>
+              <div class="status-item">
+                <span class="pill-label">DP3</span>
+                <button class="status-pill">รอเปิด DP</button>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr data-group="c3" class="group-child">
+          <td class="muted">&nbsp;</td>
+          <td><div class="site-pill">K00235 · ถนนพระราม-บางบอน Phase 2</div></td>
+          <td>คอนกรีต 280 KSC</td>
+          <td><strong>25.0</strong></td>
+          <td><strong>0.0</strong></td>
+          <td>29 ม.ค. 2026 เวลา 11:00</td>
+          <td class="status-col">
+            <button class="status-pill">วางแผน</button>
+          </td>
+          <td class="status-col">
+            <div class="status-list">
+              <div class="status-item">
+                <span class="pill-label">DP1</span>
+                <button class="status-pill">รอเปิด DP</button>
+              </div>
+              <div class="status-item">
+                <span class="pill-label">DP2</span>
+                <button class="status-pill">รอเปิด DP</button>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Customer group: คุณอนุชา โฮมบิลด์ -->
+        <tr class="group-head" data-group="c4">
+          <td class="stack">
+            <div class="customer-head">
+              <button class="customer-toggle" data-group="c4">−</button>
+              <strong>คุณอนุชา โฮมบิลด์</strong>
+            </div>
+            <div class="muted">ลูกค้า: C004501 · 092-999-8888 · Line: @anucha_home</div>
+          </td>
+          <td colspan="7" class="muted">คำสั่ง 1 Site code</td>
+        </tr>
+        <tr data-group="c4" class="group-child">
+          <td class="muted">&nbsp;</td>
+          <td><div class="site-pill">K00088 · บ้านอนุชา ซ.10</div></td>
+          <td>คอนกรีต 180 KSC</td>
+          <td><strong>9.0</strong></td>
+          <td><strong>0.0</strong></td>
+          <td>28 ม.ค. 2026 เวลา 16:30</td>
+          <td class="status-col">
+            <button class="status-pill active">รอ Site code</button>
+          </td>
+          <td class="status-col">
+            <div class="status-list">
+              <div class="status-item">
+                <span class="pill-label">DP1</span>
+                <button class="status-pill">รอเปิด DP</button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    // Toggle expand/collapse per customer group
+    document.querySelectorAll('.customer-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.dataset.group;
+        const rows = document.querySelectorAll(`tr[data-group="${group}"].group-child`);
+        const isOpen = btn.textContent.trim() === '−';
+        btn.textContent = isOpen ? '+' : '−';
+        rows.forEach(r => r.style.display = isOpen ? 'none' : '');
+      });
+    });
+  </script>
+</body>
+</html>

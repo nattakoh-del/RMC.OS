@@ -1,0 +1,384 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>บันทึกผลทดสอบต้นแหล่ง</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="CPACTheme.css">
+  <style>
+    :lang(th) { font-family:'Prompt','Space Grotesk',system-ui,-apple-system,sans-serif; }
+    :lang(en) { font-family:'Space Grotesk','Prompt',system-ui,-apple-system,sans-serif; letter-spacing:0.01em; }
+
+    .page-head { display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+    .page-head h1 { font-size:26px; margin-bottom:4px; }
+    .page-head .sub { margin:0; }
+    .float-actions { position:static; margin-left:auto; gap:10px; }
+    .filter-card { padding:16px; }
+    .filter-grid { display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); }
+    .segmented { display:flex; flex-wrap:wrap; gap:8px; }
+    .segmented button { border:1px solid var(--line); background:var(--chip-bg); color:var(--text); padding:9px 12px; border-radius:12px; font-weight:700; cursor:pointer; box-shadow:0 6px 12px rgba(24,156,216,0.08); transition:all 0.12s ease; }
+    .segmented button.active { border-color:var(--accent); color:var(--accent); background:rgba(24,156,216,0.1); }
+    .inline-wrap { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:var(--chip-bg); font-weight:700; font-size:12px; }
+    .pill .dot { width:8px; height:8px; border-radius:50%; background:currentColor; }
+    .pill.gray { color:var(--muted); }
+    .pill.green { color:var(--success); border-color:rgba(15,179,106,0.45); }
+    .pill.red { color:var(--danger); border-color:rgba(229,57,85,0.45); }
+    .pill-btn { border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer; text-align:left; width:100%; box-shadow:0 6px 14px rgba(24,156,216,0.08); }
+    .pill-btn span { display:block; color:var(--muted); font-size:11px; font-weight:600; }
+    .pill-btn.green { color:var(--success); border-color:rgba(15,179,106,0.45); background:rgba(15,179,106,0.08); }
+    .pill-btn.red { color:var(--danger); border-color:rgba(229,57,85,0.45); background:rgba(229,57,85,0.08); }
+    .pill-btn.soon { color:var(--warn); border-color:rgba(245,158,11,0.6); background:rgba(245,158,11,0.12); }
+    .pill-btn.highlight { border-color:var(--accent); box-shadow:0 8px 16px rgba(24,156,216,0.2); }
+    .stack { display:grid; gap:6px; }
+    .radio-row { display:flex; gap:8px; align-items:center; font-size:13px; color:var(--text); }
+    .status-note { color:var(--muted); font-size:12px; margin-top:2px; }
+    .cell-label { color:var(--muted); font-size:12px; margin-top:2px; }
+    .scan { display:flex; align-items:center; justify-content:center; gap:4px; }
+    .scan svg { width:16px; height:16px; fill:var(--accent); }
+    .scan strong { font-size:12px; }
+    .note-row { padding:12px 16px; font-size:12.5px; color:var(--muted); display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    tbody tr:hover { background:rgba(24,156,216,0.04); }
+    .note-box { display:grid; gap:6px; }
+    .note-input { width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:13px; }
+    .note-log { display:grid; gap:6px; margin-top:4px; }
+    .note-item { padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#f7fbff; font-size:12px; }
+    .note-meta { color:var(--muted); font-size:11px; }
+    .date-input { display:flex; gap:6px; align-items:center; }
+    .date-input input { flex:1; border-radius:10px; border:1px solid var(--line); padding:9px 10px; font-size:13px; }
+    @media (max-width: 1080px) { thead { position:static; } th, td { font-size:12.5px; } }
+  </style>
+</head>
+<body>
+  <header class="page-head">
+    <div>
+      <h1>บันทึกผลทดสอบต้นแหล่ง</h1>
+      <p class="sub">ระบบบันทึกคุณภาพวัตถุดิบต้นแหล่ง | วันที่ปัจจุบัน: 9/1/2026</p>
+    </div>
+    <div class="float-actions">
+      <button class="button ghost" lang="en">Export CSV</button>
+      <button class="button primary">บันทึกทั้งหมด</button>
+    </div>
+  </header>
+
+  <section class="cpac-surface filter-card">
+    <div class="filter-grid">
+      <div>
+        <label>ประเภทแหล่ง</label>
+        <select>
+          <option>ทั้งหมด</option>
+          <option>หิน</option>
+          <option>ทราย</option>
+        </select>
+      </div>
+      <div>
+        <label>ชื่อแหล่ง</label>
+        <select>
+          <option>ทั้งหมด</option>
+          <option>ปูนซีเมนต์ไทย</option>
+          <option>ลีลาภานน</option>
+        </select>
+      </div>
+      <div>
+        <label>กิจการที่ใช้ต้นแหล่ง</label>
+        <select>
+          <option>ทั้งหมด</option>
+          <option>CPAC Metro</option>
+          <option>CPAC East</option>
+          <option>CPAC West</option>
+        </select>
+      </div>
+      <div>
+        <label>กิจการ Update ผล</label>
+        <select>
+          <option>ทั้งหมด</option>
+          <option>CPAC Metro</option>
+          <option>CPAC East</option>
+        </select>
+      </div>
+      <div>
+        <label>ครบกำหนดทดสอบ</label>
+        <select>
+          <option>ทั้งหมด</option>
+          <option>ใกล้ครบกำหนด</option>
+          <option>เกินกำหนด</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="inline-wrap" style="margin-top:12px; justify-content:space-between;">
+      <div class="inline-wrap">
+        <span class="pill gray"><span class="dot"></span> ตัวกรองพิเศษ</span>
+        <div class="segmented">
+          <button class="active">ใกล้ครบกำหนดล่วงหน้า 2 เดือน</button>
+          <button>ครบกำหนดแล้ว</button>
+          <button>ผ่านทั้งหมด</button>
+        </div>
+      </div>
+      <div class="inline-wrap">
+        <label style="margin:0; color:var(--muted);">กลุ่มใช้งาน</label>
+        <button class="button ghost" style="padding:8px 12px;" lang="en">Dropdown</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top:18px;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width:90px;">ประเภทแหล่ง</th>
+          <th style="width:210px;">ชื่อแหล่ง</th>
+          <th style="width:170px;">กิจการที่ใช้</th>
+          <th style="width:190px;">สัญญาต้นแหล่ง</th>
+          <th style="width:170px;">สถานะผลทดสอบ</th>
+          <th style="width:150px;">วันทดสอบล่าสุด</th>
+          <th style="width:150px;">วันครบกำหนด</th>
+          <th style="width:90px;" lang="en">Scan file</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:center;">
+            <div class="pill gray"><span class="dot"></span> หิน</div>
+          </td>
+          <td>
+            <strong>(1301) ปูนซีเมนต์ไทย (ขาว)</strong>
+            <div class="note-box">
+              <input class="note-input" data-row="1" type="text" placeholder="พิมพ์หมายเหตุแล้วกด Enter เพื่อบันทึก">
+              <div class="note-log" id="note-log-1"></div>
+            </div>
+          </td>
+          <td>
+            <div class="stack">
+              <span class="pill-btn highlight">CPAC Metro</span>
+              <span class="pill-btn">CPAC East</span>
+              <span class="pill-btn">CPAC West</span>
+            </div>
+          </td>
+          <td>
+            <div class="stack">
+              <span class="cell-label">สัญญา</span>
+              <select>
+                <option selected>มีสัญญา</option>
+                <option>ไม่มีสัญญา</option>
+              </select>
+              <span class="cell-label">สถานะขึ้นทะเบียน</span>
+              <select>
+                <option selected>ขึ้นทะเบียนแล้ว</option>
+                <option>ยังไม่ขึ้นทะเบียน</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="stack">
+              <select>
+                <option selected>ผ่าน</option>
+                <option>ไม่ผ่าน</option>
+                <option>ผ่านแบบมีเงื่อนไข</option>
+                <option>รอ Approve โดยวิศวกร</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="date-input">
+              <input type="date" value="2025-12-22">
+            </div>
+          </td>
+          <td><button class="pill-btn green">22/12/26 <span>เหลือ: 1 ปี</span></button></td>
+          <td class="scan">
+            <svg viewBox="0 0 24 24"><path d="M6 2h7l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7 1.5V8h4.5"/></svg>
+            <strong>0/3</strong>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="text-align:center;">
+            <div class="pill gray"><span class="dot"></span> หิน</div>
+          </td>
+          <td>
+            <strong>(1004044) ลีลาภานน</strong>
+            <div class="note-box">
+              <input class="note-input" data-row="2" type="text" placeholder="พิมพ์หมายเหตุแล้วกด Enter เพื่อบันทึก">
+              <div class="note-log" id="note-log-2"></div>
+            </div>
+          </td>
+          <td>
+            <div class="stack">
+              <span class="pill-btn">CPAC Metro</span>
+              <span class="pill-btn highlight">CPAC East</span>
+              <span class="pill-btn">CPAC West</span>
+            </div>
+          </td>
+          <td>
+            <div class="stack">
+              <span class="cell-label">สัญญา</span>
+              <select>
+                <option selected>มีสัญญา</option>
+                <option>ไม่มีสัญญา</option>
+              </select>
+              <span class="cell-label">สถานะขึ้นทะเบียน</span>
+              <select>
+                <option>ขึ้นทะเบียนแล้ว</option>
+                <option selected>ยังไม่ขึ้นทะเบียน</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="stack">
+              <select>
+                <option>ผ่าน</option>
+                <option selected>ไม่ผ่าน</option>
+                <option>ผ่านแบบมีเงื่อนไข</option>
+                <option>รอ Approve โดยวิศวกร</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="date-input">
+              <input type="date" value="2025-11-01">
+            </div>
+          </td>
+          <td><button class="pill-btn soon">1/11/26 <span>เหลือ: 2 เดือน</span></button></td>
+          <td class="scan">
+            <svg viewBox="0 0 24 24"><path d="M6 2h7l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7 1.5V8h4.5"/></svg>
+            <strong>1/3</strong>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="text-align:center;">
+            <div class="pill gray"><span class="dot"></span> ทราย</div>
+          </td>
+          <td>
+            <strong>(1113722) บ่อทรายบางศกร</strong>
+            <div class="note-box">
+              <input class="note-input" data-row="3" type="text" placeholder="พิมพ์หมายเหตุแล้วกด Enter เพื่อบันทึก">
+              <div class="note-log" id="note-log-3"></div>
+            </div>
+          </td>
+          <td>
+            <div class="stack">
+              <span class="pill-btn highlight">CPAC Metro</span>
+            </div>
+          </td>
+          <td>
+            <div class="stack">
+              <span class="cell-label">สัญญา</span>
+              <select>
+                <option selected>มีสัญญา</option>
+                <option>ไม่มีสัญญา</option>
+              </select>
+              <span class="cell-label">สถานะขึ้นทะเบียน</span>
+              <select>
+                <option selected>ขึ้นทะเบียนแล้ว</option>
+                <option>ยังไม่ขึ้นทะเบียน</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="stack">
+              <select>
+                <option>ผ่าน</option>
+                <option>ไม่ผ่าน</option>
+                <option>ผ่านแบบมีเงื่อนไข</option>
+                <option selected>รอผลการตรวจซ้ำ</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="date-input">
+              <input type="date" value="2024-08-01">
+            </div>
+          </td>
+          <td><button class="pill-btn red">1/08/25 <span>เกินกำหนด</span></button></td>
+          <td class="scan">
+            <svg viewBox="0 0 24 24"><path d="M6 2h7l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7 1.5V8h4.5"/></svg>
+            <strong>0/3</strong>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="text-align:center;">
+            <div class="pill gray"><span class="dot"></span> ทราย</div>
+          </td>
+          <td>
+            <strong>(1130955) บจก.บุญมารุ่ง</strong>
+            <div class="note-box">
+              <input class="note-input" data-row="4" type="text" placeholder="พิมพ์หมายเหตุแล้วกด Enter เพื่อบันทึก">
+              <div class="note-log" id="note-log-4"></div>
+            </div>
+          </td>
+          <td>
+            <div class="stack">
+              <span class="pill-btn highlight">CPAC North</span>
+            </div>
+          </td>
+          <td>
+            <div class="stack">
+              <span class="cell-label">สัญญา</span>
+              <select>
+                <option selected>มีสัญญา</option>
+                <option>ไม่มีสัญญา</option>
+              </select>
+              <span class="cell-label">สถานะขึ้นทะเบียน</span>
+              <select>
+                <option selected>ขึ้นทะเบียนแล้ว</option>
+                <option>ยังไม่ขึ้นทะเบียน</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="stack">
+              <select>
+                <option selected>ผ่าน</option>
+                <option>ไม่ผ่าน</option>
+                <option>ผ่านแบบมีเงื่อนไข</option>
+                <option>รอ Approve โดยวิศวกร</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="date-input">
+              <input type="date" value="2025-10-01">
+            </div>
+          </td>
+          <td><button class="pill-btn green">1/10/26 <span>เหลือ: 1 ปี</span></button></td>
+          <td class="scan">
+            <svg viewBox="0 0 24 24"><path d="M6 2h7l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7 1.5V8h4.5"/></svg>
+            <strong>2/3</strong>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note-row">
+      หมายเหตุ: 1 รายการสามารถแนบ Scan file ได้สูงสุด 3 ไฟล์
+      <span class="pill green"><span class="dot"></span> ยังไม่ครบกำหนด</span>
+      <span class="pill red"><span class="dot"></span> เกินกำหนด</span>
+      <span class="pill" style="color:var(--warn); border-color:rgba(245,158,11,0.6);"><span class="dot"></span> ใกล้ครบกำหนด (< 2 เดือน)</span>
+    </div>
+  </section>
+  <script>
+    (() => {
+      const user = 'demo.user';
+      document.querySelectorAll('.note-input').forEach(input => {
+        input.addEventListener('keypress', e => {
+          if (e.key !== 'Enter') return;
+          e.preventDefault();
+          const text = input.value.trim();
+          if (!text) return;
+          const row = input.dataset.row;
+          const log = document.getElementById(`note-log-${row}`);
+          const stamp = new Date().toLocaleString('th-TH');
+          const div = document.createElement('div');
+          div.className = 'note-item';
+          div.innerHTML = `<div>${text}</div><div class=\"note-meta\">${stamp} · ${user}</div>`;
+          log.prepend(div);
+          input.value = '';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

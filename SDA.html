@@ -1,0 +1,245 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Delivery &middot; แจ้งเตือนความเสี่ยง</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="CPACTheme.css" />
+  <style>
+    :root { --mobile-width: 420px; }
+    body {
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      padding: 24px;
+      font-family: 'Noto Sans Thai','Prompt','Space Grotesk', system-ui, -apple-system, sans-serif;
+      letter-spacing: 0.01em;
+    }
+    .phone-frame {
+      width: min(var(--mobile-width), 100%);
+      background: #f6fbff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 24px 48px rgba(24,156,216,0.18);
+      overflow: hidden;
+    }
+    header {
+      padding: 18px 18px 10px;
+      background: linear-gradient(130deg, #189cd8, #34b4ec);
+      color: #fff;
+    }
+    header h1 { margin: 0 0 6px; font-size: 20px; letter-spacing: 0; }
+    header .meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 12px; }
+    .meta-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.22); font-weight: 600;
+    }
+    .content { padding: 14px 16px 18px; display: grid; gap: 12px; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 24px rgba(24,156,216,0.1); padding: 14px; }
+    .card h3 { margin: 0 0 4px; font-size: 16px; }
+    .card .sub { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
+    .risk-list { display: grid; gap: 10px; }
+    .risk-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background: #f9fcff;
+      display: grid; gap: 6px;
+    }
+    .risk-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .risk-title { font-weight: 700; font-size: 14px; color: var(--text); }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.01em; border: 1px solid var(--line); background: #eef7ff; color: var(--text); }
+    .badge.source { background: #e8f7fb; }
+    .badge.sev-high { color: #e53955; border-color: rgba(229,57,85,0.45); background: #fff2f5; }
+    .badge.sev-med { color: #f59e0b; border-color: rgba(245,158,11,0.5); background: #fff8eb; }
+    .badge.sev-low { color: #0fb36a; border-color: rgba(15,179,106,0.4); background: #e7fbf3; }
+    .risk-note { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .ack-row { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+    .ack-row input { width: 18px; height: 18px; accent-color: var(--accent); }
+    .action-bar {
+      position: sticky;
+      bottom: 0;
+      padding: 12px 14px 16px;
+      background: linear-gradient(180deg, rgba(246,251,255,0), #f6fbff 50%);
+      display: grid; gap: 8px;
+      border-top: 1px solid var(--line);
+    }
+    .primary-btn {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(120deg, #189cd8, #34b4ec);
+      box-shadow: 0 12px 28px rgba(24,156,216,0.25);
+      cursor: pointer;
+      transition: transform 0.08s ease, opacity 0.12s ease;
+    }
+    .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+    .ghost-btn { border: 1px solid var(--line); background: #fff; color: var(--text); border-radius: 12px; padding: 12px; font-weight: 700; cursor: pointer; }
+    .section-title { font-size: 12px; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; margin-bottom: 6px; text-transform: uppercase; }
+    .inline-inputs { display: grid; gap: 8px; }
+    .inline-inputs select, .inline-inputs textarea, .inline-inputs input { width: 100%; }
+    textarea { min-height: 60px; resize: vertical; font-family: 'Noto Sans Thai','Prompt','Space Grotesk', sans-serif; }
+    .history { display: grid; gap: 10px; }
+    .history-item { border: 1px dashed var(--line); border-radius: 10px; padding: 10px; font-size: 12px; color: var(--muted); background: #fff; }
+    .location { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+    .dp-tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+    .dp-tab { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: #fff; display: grid; gap: 4px; font-size: 12px; cursor: pointer; box-shadow: 0 8px 16px rgba(24,156,216,0.08); }
+    .dp-tab.active { border-color: var(--accent); background: #eef7ff; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; background: #eef7ff; border-radius: 999px; font-weight: 700; font-size: 11px; }
+    .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+    @media (max-width: 520px) { body { padding: 10px; } .phone-frame { border-radius: 16px; } }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <header>
+      <h1>แจ้งเตือนความเสี่ยง (Smart Delivery)</h1>
+      <div class="meta">
+        <span class="meta-chip">รหัสทริป #SD-4821</span>
+        <span class="meta-chip">DP 2 / 4 &middot; เวลา 10:30</span>
+        <span class="meta-chip">ไซต์: โครงการ Lumpini Park</span>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="section-title">สถานะ DP</div>
+      <div class="dp-tabs">
+        <div class="dp-tab active">
+          <div class="info-row"><strong>DP02</strong><span class="pill">รอเช็คอิน</span></div>
+          <div class="info-row"><span>ระยะทาง 3.2 กม.</span><span class="location"><span class="dot"></span>ตำแหน่งปัจจุบัน</span></div>
+        </div>
+        <div class="dp-tab">
+          <div class="info-row"><strong>DP03</strong><span class="pill" style="background:#e7fbf3;color:#0fb36a;">เสร็จสิ้น</span></div>
+          <div class="info-row"><span>รับทราบ 3/3</span><span class="location"><span class="dot" style="background:#0fb36a"></span>บันทึกแล้ว</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>รายการความเสี่ยงที่ต้องอ่าน</h3>
+        <p class="sub">รวบรวมจาก 2 แหล่ง: ทีมขาย/สำรวจหน้างาน และสคริปต์สั้นจากศูนย์รับจ่ายคอนกรีต</p>
+        <div class="risk-list" id="riskList">
+          <div class="risk-item" data-risk="1">
+            <div class="risk-top">
+              <span class="risk-title">พื้นที่ไซต์จำกัด &middot; จุดเทด้านหลังโครงการ</span>
+              <span class="badge source">จากทีมสำรวจ</span>
+            </div>
+            <div class="risk-note">ต้องถอยรถเข้าซอยแคบ 4 ม. ห้ามจอดตัดถนนหลัก ขอให้เปิดไฟฉุกเฉินและมีคนโบกสัญญาณ</div>
+            <div class="ack-row"><input type="checkbox" class="ack"> <span>อ่านแล้วและรับทราบ</span> <span class="badge sev-med">ความเสี่ยงระดับกลาง</span></div>
+          </div>
+          <div class="risk-item" data-risk="2">
+            <div class="risk-top">
+              <span class="risk-title">มีช่วงสายไฟต่ำด้านหน้าโครงการ</span>
+              <span class="badge source">สคริปต์ศูนย์รับจ่าย</span>
+            </div>
+            <div class="risk-note">ระดับต่ำสุด 4.2 ม. ให้ลดระดับกลองปูนก่อนลอดสายไฟ และให้ผู้ช่วยลงมายืนเฝ้า</div>
+            <div class="ack-row"><input type="checkbox" class="ack"> <span>อ่านแล้วและรับทราบ</span> <span class="badge sev-high">ความเสี่ยงสูง</span></div>
+          </div>
+          <div class="risk-item" data-risk="3">
+            <div class="risk-top">
+              <span class="risk-title">ทางเข้าไซต์เป็นสะพานเล็ก</span>
+              <span class="badge source">สคริปต์ศูนย์รับจ่าย</span>
+            </div>
+            <div class="risk-note">สะพานยาว 6 ม. รับน้ำหนักสูงสุด 25 ตัน ชะลอก่อนขึ้นสะพานและขับชิดกลาง</div>
+            <div class="ack-row"><input type="checkbox" class="ack"> <span>อ่านแล้วและรับทราบ</span> <span class="badge sev-low">ความเสี่ยงต่ำ</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>เพิ่มความเสี่ยงโดยผู้ขับ</h3>
+        <p class="sub">เลือกจากรายการที่ Safety เตรียมไว้ หรือส่งคำขอเพิ่มหัวข้อใหม่</p>
+        <div class="inline-inputs">
+          <label>หัวข้อจาก Safety</label>
+          <select id="presetRisk">
+            <option value="">-- เลือกความเสี่ยง --</option>
+            <option>มีซุ้มวัด</option>
+            <option>มีช่วงสายไฟต่ำ</option>
+            <option>ถนนแคบ</option>
+            <option>สะพานเล็ก</option>
+            <option>พื้นที่ไซต์จำกัด</option>
+            <option>มีคูคลองใกล้พื้นที่เท</option>
+          </select>
+          <label>รายละเอียดเพิ่มเติม (ถ้ามี)</label>
+          <textarea id="riskNote" placeholder="พิมพ์จุดสังเกต หรือพิกัด..."></textarea>
+          <label>ตำแหน่งปัจจุบัน</label>
+          <div class="location"><span class="dot"></span><span id="gps">กำลังอ่านพิกัด...</span></div>
+          <button class="primary-btn" id="addRiskBtn">เพิ่มความเสี่ยงนี้ (บันทึกผูกกับ DP02)</button>
+          <div style="border-top:1px solid var(--line); margin:4px 0 0; padding-top:6px;">
+            <label>ต้องการหัวข้อใหม่?</label>
+            <input id="requestRisk" placeholder="พิมพ์หัวข้อที่ต้องการให้ทีม Safety เพิ่ม" />
+            <button class="ghost-btn" id="requestBtn">ส่งคำขอถึงทีม Safety CPAC</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>ประวัติที่บันทึกใน DP02</h3>
+        <div class="history" id="history">
+          <div class="history-item">09:55 &middot; ผู้ขับเพิ่ม "ถนนแคบ" &middot; พิกัด 13.7461, 100.5414</div>
+          <div class="history-item">09:42 &middot; รับทราบความเสี่ยงทั้งหมดก่อนออกจาก Plant</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <div style="font-size:12px; color: var(--muted); font-weight:600;">ต้องกดรับทราบทุกความเสี่ยงก่อนเริ่มงาน DP02</div>
+      <button class="primary-btn" id="startBtn" disabled>เช็คอินไซต์ / เริ่มงาน</button>
+    </div>
+  </div>
+
+  <script>
+    const acks = Array.from(document.querySelectorAll('.ack'));
+    const startBtn = document.getElementById('startBtn');
+    const gps = document.getElementById('gps');
+    const history = document.getElementById('history');
+    const addBtn = document.getElementById('addRiskBtn');
+    const requestBtn = document.getElementById('requestBtn');
+
+    function checkAck() {
+      const allChecked = acks.every(cb => cb.checked);
+      startBtn.disabled = !allChecked;
+    }
+    acks.forEach(cb => cb.addEventListener('change', checkAck));
+
+    function mockGPS() {
+      const lat = 13.744 + Math.random() * 0.01;
+      const lng = 100.538 + Math.random() * 0.01;
+      gps.textContent = lat.toFixed(4) + ', ' + lng.toFixed(4);
+    }
+    mockGPS();
+
+    addBtn.addEventListener('click', () => {
+      const select = document.getElementById('presetRisk');
+      if (!select.value) { alert('เลือกหัวข้อความเสี่ยงก่อน'); return; }
+      const note = document.getElementById('riskNote').value.trim();
+      const stamp = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+      const entry = document.createElement('div');
+      entry.className = 'history-item';
+      entry.textContent = `${stamp} · ผู้ขับเพิ่ม "${select.value}" ${note ? '· ' + note : ''}`;
+      history.prepend(entry);
+      select.value = '';
+      document.getElementById('riskNote').value = '';
+    });
+
+    requestBtn.addEventListener('click', () => {
+      const val = document.getElementById('requestRisk').value.trim();
+      if (!val) { alert('พิมพ์หัวข้อที่ต้องการ'); return; }
+      const stamp = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+      const entry = document.createElement('div');
+      entry.className = 'history-item';
+      entry.textContent = `${stamp} · ส่งคำขอเพิ่มหัวข้อใหม่ถึงทีม Safety: ${val}`;
+      history.prepend(entry);
+      document.getElementById('requestRisk').value = '';
+      alert('ส่งคำขอแล้ว ทีม Safety จะตรวจสอบและเพิ่มใน Dropdown');
+    });
+  </script>
+</body>
+</html>
