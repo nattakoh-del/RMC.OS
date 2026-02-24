@@ -20,13 +20,12 @@
     .sub{margin:0;color:var(--muted);}
     .board{
       display:grid;
-      grid-template-columns:1fr 1.3fr 0.7fr;
-      grid-template-rows:140px 1fr 170px 180px;
+      grid-template-columns:1fr 1fr 1fr;
+      grid-template-rows:180px 1.4fr 1fr;
       grid-template-areas:
         "truck dp silo"
         "machine machine machine"
-        "weigh weigh weigh"
-        "quality quality quality";
+        "weigh quality quality";
       gap:12px;
       min-height:640px;
       height:auto;
@@ -36,10 +35,10 @@
     .col-stack{display:grid;gap:8px;height:100%;grid-auto-rows:minmax(200px, auto);}
     .machine-stack{display:grid;gap:8px;height:100%;}
     .side-stack{display:grid;gap:8px;height:100%;}
-    .section-title{display:flex;align-items:center;gap:8px;font-weight:700;margin:0 0 6px;font-size:13px;}
+    .section-title{display:flex;align-items:center;gap:8px;font-weight:700;margin:0 0 6px;font-size:17px;}
     .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);}
     /* Stock vertical bars */
-    .silo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:4px;align-items:end;overflow:visible;}
+    .silo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(40px,1fr));gap:4px;align-items:end;overflow:visible;}
     .silo-bar{position:relative;height:120px;border:1px solid var(--line);border-radius:10px;padding:4px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;background:linear-gradient(180deg,#f7fbff 0%,#fff 100%);box-shadow:0 3px 8px rgba(24,156,216,0.08);overflow:visible;}
     .silo-fill{position:relative;width:100%;height:90px;border-radius:9px;background:#e9f4fb;overflow:hidden;}
     .silo-fill span.level{position:absolute;bottom:0;left:0;width:100%;}
@@ -81,7 +80,7 @@
     .weigh-actual{font-size:26px;font-weight:800;text-align:center;}
     .weigh-error{font-size:12px;font-weight:700;text-align:center;}
     /* Machine visualize */
-    .plant-wrap{position:relative;border:1px solid var(--line);border-radius:12px;min-height:420px;overflow:hidden;box-shadow:0 10px 20px rgba(24,156,216,0.12);background:#0f172a url('assets/Concrete plant screen display.jpeg') center/cover no-repeat;}
+    .plant-wrap{position:relative;border:1px solid var(--line);border-radius:12px;min-height:420px;overflow:hidden;box-shadow:0 10px 20px rgba(24,156,216,0.12);background:#0f172a url('assets/Concrete plant screen display.jpeg') center/cover no-repeat;filter:brightness(0.55);}
     .plant-overlay{position:absolute;inset:0;background:radial-gradient(900px 900px at 25% 20%,rgba(255,255,255,0.05),transparent 55%),radial-gradient(900px 900px at 75% 15%,rgba(255,255,255,0.05),transparent 60%);}    
     .stage-pill{position:absolute;display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,0.92);font-weight:700;font-size:11px;box-shadow:0 6px 14px rgba(24,156,216,0.12);}    
     .stage-pill.active{border-color:var(--accent);color:var(--accent);}
@@ -112,12 +111,12 @@
   </header>
 
   <div class="board">
-    <div class="cpac-surface" style="padding:8px;grid-area:truck;overflow:hidden;">
+    <div class="cpac-surface" style="padding:8px;grid-area:truck;overflow:hidden;height:100%;">
       <p class="section-title"><span class="dot"></span> สถานะรถโม่ (compact)</p>
       <div class="truck-board" id="truck-board"></div>
     </div>
 
-    <section class="panel" style="padding:8px;grid-area:dp;overflow:auto;">
+    <section class="panel" style="padding:8px;grid-area:dp;overflow:auto;height:100%;">
       <p class="section-title"><span class="dot"></span> DP Concrete ที่เข้ามาแล้ว</p>
       <table class="table" style="margin-top:6px;font-size:12px;table-layout:fixed;">
         <thead>
@@ -133,12 +132,12 @@
       </table>
     </section>
 
-    <div class="cpac-surface" style="padding:8px;grid-area:silo;display:grid;grid-auto-rows:auto 1fr;overflow:visible;">
+    <div class="cpac-surface" style="padding:8px;grid-area:silo;display:grid;grid-auto-rows:auto 1fr;overflow:visible;height:100%;">
       <p class="section-title"><span class="dot"></span> ปริมาณวัตถุดิบ Realtime (แยก Silo)</p>
       <div class="silo-grid" id="silo-grid"></div>
     </div>
 
-    <section class="cpac-surface machine-card" style="padding:12px;grid-area:machine;">
+    <section class="cpac-surface machine-card" style="padding:12px;grid-area:machine;height:100%;">
       <p class="section-title"><span class="dot"></span> สถานะการทำงานของเครื่องจักรบนภาพเครื่อง</p>
       <div class="plant-wrap">
         <div class="plant-overlay"></div>
@@ -172,26 +171,26 @@
       </div>
     </section>
 
-    <section class="cpac-surface weigh-card" style="padding:10px;grid-area:weigh;">
+    <section class="cpac-surface weigh-card" style="padding:10px;grid-area:weigh;height:100%;">
       <p class="section-title"><span class="dot"></span> น้ำหนักชั่ง Realtime</p>
       <div class="weigh-grid" id="weigh-grid"></div>
     </section>
 
-    <section class="panel" style="padding:12px;grid-area:quality;">
+    <section class="panel" style="padding:12px;grid-area:quality;height:100%;">
       <p class="section-title"><span class="dot"></span> คุณภาพวัตถุดิบ</p>
       <div class="quality-visual">
         <div class="quality-main">
           <div class="card">
-            <strong class="sub-highlight">Sub product วิศวกรกำหนด (P/I/H)</strong>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-              <span class="pill-mini">แนะนำ: P</span>
+            <strong class="sub-highlight">Sub product วิศวกรกำหนด</strong>
+            <div style="display:flex;justify-content:center;align-items:center;margin-top:10px;">
+              <span class="pill-mini" style="font-size:32px; padding:14px 20px; border-width:2px;">P</span>
             </div>
             <div style="margin-top:10px;font-size:12px;color:var(--muted);">ข้อมูลประกอบ: ใช้ชุดทดลองรอบ 15 วัน</div>
           </div>
           <div class="card">
-            <strong class="sub-highlight">Sub product คำนวณจากคุณภาพวัตถุดิบ (P/I/H)</strong>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-              <span class="pill-mini" style="border-color:rgba(229,57,85,0.5);color:var(--danger);">ระบบ: H (+1)</span>
+            <strong class="sub-highlight">Sub product คำนวณจาก Quick test</strong>
+            <div style="display:flex;justify-content:center;align-items:center;margin-top:10px;">
+              <span class="pill-mini" style="font-size:32px; padding:14px 20px; border-width:2px;color:var(--danger);border-color:rgba(229,57,85,0.7);">H</span>
             </div>
             <div style="margin-top:10px;font-size:12px;color:var(--muted);">หมายเหตุ: ระบบต่างจากวิศวกร +1 ขั้น</div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
@@ -357,5 +356,16 @@
   </script>
   </div><!-- /canvas -->
   </div><!-- /page-scroll -->
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
 </body>
 </html>

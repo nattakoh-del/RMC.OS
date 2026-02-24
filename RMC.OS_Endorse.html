@@ -71,9 +71,10 @@
 <div class="shell">
   <header>
     <div>
-      <h1>ข้อมูลงานจอง | SCG Endorse</h1>
+      <h1>RMC.OS</h1>
       <div style="font-size:12px;opacity:0.9;">แบบฟอร์มรับออเดอร์คอนกรีต (สีขาว-แดง)</div>
     </div>
+    <div style="font-weight:700;font-size:21px;">โรงงานตัวอย่าง รหัสโรงงาน 0001</div>
   </header>
 
   <div class="tabbar">
@@ -190,6 +191,9 @@
               <label>ผู้บันทึก</label>
               <input value="วรสิริพาดใหญ3" readonly />
             </div>
+          </div>
+          <div class="action-bar" style="margin-top:12px;justify-content:flex-end;">
+            <button class="btn primary">บันทึกข้อมูล</button>
           </div>
         </div>
       </div>
@@ -602,7 +606,12 @@
           <div class="row" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));">
             <div>
               <label>สถานะ</label>
-              <select><option>รอยืนยัน</option></select>
+              <select>
+                <option>รอยืนยัน</option>
+                <option>ยืนยันแล้ว</option>
+                <option>เทเสร็จ</option>
+                <option>ยกเลิก</option>
+              </select>
             </div>
           </div>
 
@@ -734,31 +743,34 @@
       </div>
 
       <div class="panel" style="margin-top:8px;">
-        <h3>โรงงานจัดส่ง / ตารางคิว</h3>
-          <div style="margin-top:10px;overflow:auto;">
-            <table>
-              <thead>
-                <tr>
-                  <th>ลำดับ</th><th>โรงงาน / ระยะทาง</th><th>เริ่มต้นเท</th><th>จำนวนจอง</th><th>เทแล้ว</th><th>เก็บก้อนปูน</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>
-                    <select style="width:100%;">
-                      <option selected>โรงงานใกล้สุด (Auto)</option>
-                      <option>โรงงาน A - 8 กม.</option>
-                      <option>โรงงาน B - 12 กม.</option>
-                      <option>โรงงาน C - 18 กม.</option>
-                    </select>
-                  </td>
-                  <td><input class="start-pour" style="width:100%;" value="09:00"></td>
-                  <td><input class="qty-pour" style="width:100%;" value="5"></td>
-                  <td>0</td>
-                  <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
-                </tr>
-              </tbody>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <h3 style="margin:0;">โรงงานจัดส่ง / ตารางคิว</h3>
+          <button class="btn primary" style="background:var(--success);box-shadow:none;padding:8px 12px;">+ เพิ่มโรงงาน</button>
+        </div>
+        <div style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>ลำดับ</th><th>โรงงาน / ระยะทาง</th><th>เริ่มต้นเท</th><th>จำนวนจอง</th><th>เทแล้ว</th><th>เก็บก้อนปูน</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>
+                  <select style="width:100%;">
+                    <option selected>โรงงานใกล้สุด (Auto)</option>
+                    <option>โรงงาน A - 8 กม.</option>
+                    <option>โรงงาน B - 12 กม.</option>
+                    <option>โรงงาน C - 18 กม.</option>
+                  </select>
+                </td>
+                <td><input class="start-pour" style="width:100%;" value="09:00"></td>
+                <td><input class="qty-pour" style="width:100%;" value="5"></td>
+                <td>0</td>
+                <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -787,6 +799,9 @@
       <label style="font-size:12px;color:var(--muted);">สถานะ</label>
       <select style="max-width:180px;">
         <option>รอยืนยัน</option>
+        <option>ยืนยันแล้ว</option>
+        <option>เทเสร็จ</option>
+        <option>ยกเลิก</option>
       </select>
       <div style="flex:1;"></div>
       <button class="btn ghost">ดูข้อมูลงานจองล่วงหน้า</button>
@@ -803,11 +818,11 @@
           <div class="row">
             <div>
               <label>วันที่</label>
-              <input type="date" />
+              <input type="date" id="delivery-date" />
             </div>
             <div>
               <label>เลือกโรงงาน (เลือกได้หลายโรง)</label>
-              <select multiple size="4">
+              <select id="plant-filter" multiple size="4" aria-label="กด Ctrl หรือ Shift เพื่อเลือกหลายโรงงาน">
                 <option selected>โรงงาน A - 8 กม.</option>
                 <option>โรงงาน B - 12 กม.</option>
                 <option>โรงงาน C - 18 กม.</option>
@@ -817,137 +832,160 @@
           </div>
         </div>
 
-        <div style="overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff;">
-          <table class="mini-table">
-            <thead>
-              <tr>
-                <th>ลำดับ</th>
-                <th>หน่วยงาน</th>
-                <th>สถานะ</th>
-                <th>สินค้า</th>
-                <th>เวลาเริ่มเท</th>
-                <th>จำนวนจอง (คิว)</th>
-                <th>ส่ง</th>
-                <th>จำนวนเที่ยว</th>
-                <th>รถโม่</th>
-                <th>สถานะรถโม่</th>
-                <th>เวลาสถานะ</th>
-                <th>เวลารวม</th>
-                <th>โครงสร้าง</th>
-                <th>วิธีเท</th>
-                <th>อัตราการเท</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>919-แผนกสุวรรณภูมิ</td>
-                <td>
-                  <select>
-                    <option selected>รอยืนยัน</option>
-                    <option>ยืนยันแล้ว</option>
-                    <option>ยกเลิก</option>
-                  </select>
-                </td>
-                <td>คอนกรีต 320 KSC BRG</td>
-                <td>11:00</td>
-                <td>200</td>
-                <td>145</td>
-                <td>29</td>
-                <td>9288</td>
-                <td>เดินทางไป</td>
-                <td>0:03</td>
-                <td>0:28</td>
-                <td>พื้น</td>
-                <td>ชุด</td>
-                <td>5 : 10</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>918-AP-4177 Pleno Town</td>
-                <td>
-                  <select>
-                    <option>รอยืนยัน</option>
-                    <option selected>ยืนยันแล้ว</option>
-                    <option>ยกเลิก</option>
-                  </select>
-                </td>
-                <td>คอนกรีต 280 KSC N</td>
-                <td>15:00</td>
-                <td>4.5</td>
-                <td>0</td>
-                <td>0</td>
-                <td>8781</td>
-                <td>พร้อม</td>
-                <td>0:00</td>
-                <td>0:00</td>
-                <td>พื้น</td>
-                <td>ชุด</td>
-                <td>5 : 20</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>921-คลังสินค้า WHA Mega</td>
-                <td>
-                  <select>
-                    <option>รอยืนยัน</option>
-                    <option selected>ยืนยันแล้ว</option>
-                    <option>ยกเลิก</option>
-                  </select>
-                </td>
-                <td>คอนกรีต 240 KSC SPC</td>
-                <td>16:00</td>
-                <td>5</td>
-                <td>0</td>
-                <td>0</td>
-                <td>6539</td>
-                <td>พร้อม</td>
-                <td>0:00</td>
-                <td>0:00</td>
-                <td>พื้น</td>
-                <td>ชุด</td>
-                <td>5 : 10</td>
-              </tr>
-            </tbody>
-          </table>
+        <div style="display:grid;gap:12px;">
+          <div class="panel plant-panel" data-plant="A" style="margin:0;">
+            <h3 style="margin-bottom:8px;">โรงงาน A (3 งานจอง)</h3>
+            <div style="overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff;">
+              <table class="mini-table">
+                <thead>
+                  <tr>
+                    <th>ลำดับ</th><th>หน่วยงาน</th><th>สถานะ</th><th>สินค้า</th><th>เวลาเริ่มเท</th><th>จำนวนจอง (คิว)</th><th>ส่ง</th><th>จำนวนเที่ยว</th><th>รถโม่</th><th>สถานะรถโม่</th><th>เวลาสถานะ</th><th>เวลารวม</th><th>โครงสร้าง</th><th>วิธีเท</th><th>อัตราการเท</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>919-แผนกสุวรรณภูมิ</td><td><select><option selected>รอยืนยัน</option><option>ยืนยันแล้ว</option><option>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 320 KSC BRG</td><td>11:00</td><td>200</td><td>145</td><td>29</td><td>9288</td><td>เดินทางไป</td><td>0:03</td><td>0:28</td><td>พื้น</td><td>ชุด</td><td>5 : 10</td></tr>
+                  <tr><td>2</td><td>918-Pleno Town</td><td><select><option>รอยืนยัน</option><option selected>ยืนยันแล้ว</option><option>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 280 KSC N</td><td>15:00</td><td>4.5</td><td>0</td><td>0</td><td>8781</td><td>พร้อม</td><td>0:00</td><td>0:00</td><td>พื้น</td><td>ชุด</td><td>5 : 20</td></tr>
+                  <tr><td>3</td><td>921-WHA Mega</td><td><select><option>รอยืนยัน</option><option>ยืนยันแล้ว</option><option selected>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 240 KSC SPC</td><td>16:00</td><td>5</td><td>0</td><td>0</td><td>6539</td><td>พร้อม</td><td>0:00</td><td>0:00</td><td>พื้น</td><td>ชุด</td><td>5 : 10</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel plant-panel" data-plant="B" style="margin:0;">
+            <h3 style="margin-bottom:8px;">โรงงาน B (5 งานจอง)</h3>
+            <div style="overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff;">
+              <table class="mini-table">
+                <thead>
+                  <tr>
+                    <th>ลำดับ</th><th>หน่วยงาน</th><th>สถานะ</th><th>สินค้า</th><th>เวลาเริ่มเท</th><th>จำนวนจอง (คิว)</th><th>ส่ง</th><th>จำนวนเที่ยว</th><th>รถโม่</th><th>สถานะรถโม่</th><th>เวลาสถานะ</th><th>เวลารวม</th><th>โครงสร้าง</th><th>วิธีเท</th><th>อัตราการเท</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>4</td><td>101-Central Park</td><td><select><option selected>รอยืนยัน</option><option>ยืนยันแล้ว</option><option>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 300 KSC N</td><td>09:30</td><td>12</td><td>6</td><td>3</td><td>7701</td><td>พร้อม</td><td>0:05</td><td>0:18</td><td>พื้น</td><td>ชุด</td><td>4 : 50</td></tr>
+                  <tr><td>5</td><td>102-Lake View</td><td><select><option>รอยืนยัน</option><option selected>ยืนยันแล้ว</option><option>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 240 KSC SPC</td><td>10:15</td><td>8</td><td>4</td><td>2</td><td>7702</td><td>เดินทางไป</td><td>0:02</td><td>0:22</td><td>พื้น</td><td>ชุด</td><td>4 : 30</td></tr>
+                  <tr><td>6</td><td>103-Gateway</td><td><select><option>รอยืนยัน</option><option>ยืนยันแล้ว</option><option>เทเสร็จ</option><option selected>ยกเลิก</option></select></td><td>คอนกรีต 210 KSC N</td><td>13:00</td><td>6</td><td>0</td><td>0</td><td>7705</td><td>พร้อม</td><td>0:00</td><td>0:00</td><td>พื้น</td><td>ชุด</td><td>4 : 20</td></tr>
+                  <tr><td>7</td><td>104-Villa Park</td><td><select><option>รอยืนยัน</option><option selected>ยืนยันแล้ว</option><option>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 320 KSC BRG</td><td>14:20</td><td>18</td><td>10</td><td>4</td><td>7710</td><td>เดินทางไป</td><td>0:04</td><td>0:32</td><td>เสา</td><td>ชุด</td><td>5 : 40</td></tr>
+                  <tr><td>8</td><td>105-Riverfront</td><td><select><option>รอยืนยัน</option><option>ยืนยันแล้ว</option><option selected>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 280 KSC N</td><td>16:45</td><td>10</td><td>7</td><td>3</td><td>7715</td><td>พร้อม</td><td>0:01</td><td>0:15</td><td>พื้น</td><td>ชุด</td><td>4 : 55</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel plant-panel" data-plant="C" style="margin:0;">
+            <h3 style="margin-bottom:8px;">โรงงาน C (2 งานจอง)</h3>
+            <div style="overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff;">
+              <table class="mini-table">
+                <thead>
+                  <tr>
+                    <th>ลำดับ</th><th>หน่วยงาน</th><th>สถานะ</th><th>สินค้า</th><th>เวลาเริ่มเท</th><th>จำนวนจอง (คิว)</th><th>ส่ง</th><th>จำนวนเที่ยว</th><th>รถโม่</th><th>สถานะรถโม่</th><th>เวลาสถานะ</th><th>เวลารวม</th><th>โครงสร้าง</th><th>วิธีเท</th><th>อัตราการเท</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>9</td><td>201-Green Ville</td><td><select><option selected>รอยืนยัน</option><option>ยืนยันแล้ว</option><option>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 300 KSC N</td><td>08:45</td><td>9</td><td>5</td><td>2</td><td>8801</td><td>เดินทางไป</td><td>0:06</td><td>0:18</td><td>พื้น</td><td>ชุด</td><td>4 : 40</td></tr>
+                  <tr><td>10</td><td>202-Logi Hub</td><td><select><option>รอยืนยัน</option><option selected>ยืนยันแล้ว</option><option>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 240 KSC SPC</td><td>12:10</td><td>7</td><td>3</td><td>2</td><td>8803</td><td>พร้อม</td><td>0:00</td><td>0:00</td><td>พื้น</td><td>ชุด</td><td>4 : 25</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel plant-panel" data-plant="D" style="margin:0;">
+            <h3 style="margin-bottom:8px;">โรงงาน D (8 งานจอง)</h3>
+            <div style="overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff;">
+              <table class="mini-table">
+                <thead>
+                  <tr>
+                    <th>ลำดับ</th><th>หน่วยงาน</th><th>สถานะ</th><th>สินค้า</th><th>เวลาเริ่มเท</th><th>จำนวนจอง (คิว)</th><th>ส่ง</th><th>จำนวนเที่ยว</th><th>รถโม่</th><th>สถานะรถโม่</th><th>เวลาสถานะ</th><th>เวลารวม</th><th>โครงสร้าง</th><th>วิธีเท</th><th>อัตราการเท</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>11</td><td>301-Smart Park</td><td><select><option>รอยืนยัน</option><option selected>ยืนยันแล้ว</option><option>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 350 KSC BRG</td><td>07:30</td><td>15</td><td>10</td><td>4</td><td>9901</td><td>พร้อม</td><td>0:02</td><td>0:20</td><td>พื้น</td><td>ชุด</td><td>5 : 30</td></tr>
+                  <tr><td>12</td><td>302-Airport Link</td><td><select><option selected>รอยืนยัน</option><option>ยืนยันแล้ว</option><option>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 300 KSC N</td><td>08:20</td><td>22</td><td>11</td><td>5</td><td>9903</td><td>เดินทางไป</td><td>0:05</td><td>0:25</td><td>พื้น</td><td>ชุด</td><td>5 : 15</td></tr>
+                  <tr><td>13</td><td>303-Skyline</td><td><select><option>รอยืนยัน</option><option>ยืนยันแล้ว</option><option>เทเสร็จ</option><option selected>ยกเลิก</option></select></td><td>คอนกรีต 320 KSC N</td><td>09:10</td><td>18</td><td>8</td><td>3</td><td>9904</td><td>พร้อม</td><td>0:00</td><td>0:00</td><td>เสา</td><td>ชุด</td><td>5 : 00</td></tr>
+                  <tr><td>14</td><td>304-Riverside</td><td><select><option>รอยืนยัน</option><option selected>ยืนยันแล้ว</option><option>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 210 KSC N</td><td>10:00</td><td>12</td><td>6</td><td>2</td><td>9905</td><td>เดินทางไป</td><td>0:03</td><td>0:18</td><td>พื้น</td><td>ชุด</td><td>4 : 35</td></tr>
+                  <tr><td>15</td><td>305-Logi East</td><td><select><option>รอยืนยัน</option><option>ยืนยันแล้ว</option><option selected>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 280 KSC N</td><td>11:50</td><td>9</td><td>5</td><td>2</td><td>9907</td><td>พร้อม</td><td>0:01</td><td>0:12</td><td>พื้น</td><td>ชุด</td><td>4 : 45</td></tr>
+                  <tr><td>16</td><td>306-Smart Hub</td><td><select><option>รอยืนยัน</option><option selected>ยืนยันแล้ว</option><option>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 300 KSC N</td><td>13:40</td><td>11</td><td>7</td><td>3</td><td>9909</td><td>เดินทางไป</td><td>0:02</td><td>0:19</td><td>พื้น</td><td>ชุด</td><td>4 : 55</td></tr>
+                  <tr><td>17</td><td>307-Factory 2</td><td><select><option>รอยืนยัน</option><option>ยืนยันแล้ว</option><option>เทเสร็จ</option><option selected>ยกเลิก</option></select></td><td>คอนกรีต 240 KSC SPC</td><td>15:30</td><td>10</td><td>0</td><td>0</td><td>9911</td><td>พร้อม</td><td>0:00</td><td>0:00</td><td>พื้น</td><td>ชุด</td><td>4 : 20</td></tr>
+                  <tr><td>18</td><td>308-Mega Site</td><td><select><option selected>รอยืนยัน</option><option>ยืนยันแล้ว</option><option>เทเสร็จ</option><option>ยกเลิก</option></select></td><td>คอนกรีต 350 KSC BRG</td><td>17:10</td><td>20</td><td>10</td><td>4</td><td>9912</td><td>เดินทางไป</td><td>0:07</td><td>0:30</td><td>พื้น</td><td>ชุด</td><td>5 : 50</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
         <div class="panel">
           <h3>สถานะรถพร้อมใช้งาน</h3>
           <div style="display:flex;gap:12px;flex-wrap:wrap;">
-            <div class="panel" style="min-width:240px;border-color:#1f4f82;">
-              <strong>31BA - บ่อมไก่</strong>
-              <table class="mini-table" style="margin-top:6px;">
-                <thead>
-                  <tr><th>งานจอง</th><th>เวลา</th><th>ออกคิว</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td style="color:green;">175</td><td>5</td><td>13:57</td></tr>
-                  <tr><td style="color:purple;">46</td><td>21</td><td>14:15</td></tr>
-                  <tr><td style="color:#9400D3;">674</td><td>13</td><td>14:15</td></tr>
-                </tbody>
-              </table>
-              <div style="margin-top:6px;font-weight:700;">รถพร้อม</div>
-              <table class="mini-table">
-                <thead><tr><th>รถโม่</th><th>เวลา</th><th>ส่ง</th></tr></thead>
-                <tbody>
-                  <tr><td>3582 (7)</td><td>26</td><td>1/308.25</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="panel" style="min-width:240px;border-color:#1f4f82;">
-              <strong>13AX - บางปลา 3</strong>
+            <div class="panel truck-panel" data-plant="A" style="min-width:240px;border-color:#1f4f82;">
+              <strong>โรงงาน A</strong>
               <table class="mini-table" style="margin-top:6px;">
                 <thead><tr><th>งานจอง</th><th>เวลา</th><th>ออกคิว</th></tr></thead>
                 <tbody>
-                  <tr><td style="color:green;">6</td><td>4</td><td>13:49</td></tr>
+                  <tr><td style="color:green;">2</td><td>8</td><td>15:00</td></tr>
                 </tbody>
               </table>
               <div style="margin-top:6px;font-weight:700;">รถพร้อม</div>
               <table class="mini-table">
                 <thead><tr><th>รถโม่</th><th>เวลา</th><th>ส่ง</th></tr></thead>
                 <tbody>
-                  <tr><td>9288</td><td>3</td><td>1/145</td></tr>
+                  <tr><td>7001 (7)</td><td>12</td><td>1/120</td></tr>
+                  <tr><td>7002 (6)</td><td>18</td><td>1/95</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="panel truck-panel" data-plant="B" style="min-width:240px;border-color:#1f4f82;">
+              <strong>โรงงาน B</strong>
+              <table class="mini-table" style="margin-top:6px;">
+                <thead><tr><th>งานจอง</th><th>เวลา</th><th>ออกคิว</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:green;">5</td><td>14</td><td>10:15</td></tr>
+                  <tr><td style="color:purple;">7</td><td>18</td><td>14:20</td></tr>
+                </tbody>
+              </table>
+              <div style="margin-top:6px;font-weight:700;">รถพร้อม</div>
+              <table class="mini-table">
+                <thead><tr><th>รถโม่</th><th>เวลา</th><th>ส่ง</th></tr></thead>
+                <tbody>
+                  <tr><td>8001 (7)</td><td>9</td><td>1/90</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="panel truck-panel" data-plant="C" style="min-width:240px;border-color:#1f4f82;">
+              <strong>โรงงาน C</strong>
+              <table class="mini-table" style="margin-top:6px;">
+                <thead><tr><th>งานจอง</th><th>เวลา</th><th>ออกคิว</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:green;">10</td><td>11</td><td>12:10</td></tr>
+                </tbody>
+              </table>
+              <div style="margin-top:6px;font-weight:700;">รถพร้อม</div>
+              <table class="mini-table">
+                <thead><tr><th>รถโม่</th><th>เวลา</th><th>ส่ง</th></tr></thead>
+                <tbody>
+                  <tr><td>9001 (5)</td><td>7</td><td>1/80</td></tr>
+                  <tr><td>9002 (5)</td><td>15</td><td>1/95</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="panel truck-panel" data-plant="D" style="min-width:240px;border-color:#1f4f82;">
+              <strong>โรงงาน D</strong>
+              <table class="mini-table" style="margin-top:6px;">
+                <thead><tr><th>งานจอง</th><th>เวลา</th><th>ออกคิว</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:green;">11</td><td>4</td><td>07:30</td></tr>
+                  <tr><td style="color:purple;">14</td><td>9</td><td>10:00</td></tr>
+                  <tr><td style="color:#9400D3;">16</td><td>16</td><td>13:40</td></tr>
+                </tbody>
+              </table>
+              <div style="margin-top:6px;font-weight:700;">รถพร้อม</div>
+              <table class="mini-table">
+                <thead><tr><th>รถโม่</th><th>เวลา</th><th>ส่ง</th></tr></thead>
+                <tbody>
+                  <tr><td>9101 (7)</td><td>10</td><td>1/140</td></tr>
+                  <tr><td>9102 (6)</td><td>18</td><td>1/125</td></tr>
+                  <tr><td>9103 (5)</td><td>24</td><td>1/110</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1048,6 +1086,40 @@
     </div>
   </div>
 </div>
+
+<script>
+  // filter plant tables & truck panels based on multi-select
+  (function(){
+    const select = document.getElementById('plant-filter');
+    const dateInput = document.getElementById('delivery-date');
+    if(dateInput){
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.value = today;
+    }
+    if(!select) return;
+    const plantPanels = document.querySelectorAll('.plant-panel');
+    const truckPanels = document.querySelectorAll('.truck-panel');
+
+    function normalize(val){
+      return val.replace('โรงงาน','').trim().split(' ')[0]; // A,B,C,D
+    }
+
+    function applyFilter(){
+      const chosen = Array.from(select.selectedOptions).map(o => normalize(o.value));
+      const showAll = chosen.length === 0;
+      plantPanels.forEach(p=>{
+        const key = p.dataset.plant;
+        p.style.display = showAll || chosen.includes(key) ? '' : 'none';
+      });
+      truckPanels.forEach(p=>{
+        const key = p.dataset.plant;
+        p.style.display = showAll || chosen.includes(key) ? '' : 'none';
+      });
+    }
+    select.addEventListener('change', applyFilter);
+    applyFilter();
+  })();
+</script>
 
 <script>
   (() => {
