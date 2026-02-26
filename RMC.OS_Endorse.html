@@ -47,9 +47,16 @@
     .pill{padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:#fff;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:6px;} 
     .two-col{display:grid;grid-template-columns:1.05fr 0.95fr;gap:12px;} 
     /* tabs */
-    .tabbar{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:4;}
-    .tabbtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;transition:all .12s ease;}
-    .tabbtn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 8px 16px rgba(208,2,27,0.2);} 
+    .tabbar{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:6;flex-wrap:wrap;}
+    .tabbtn,.menu-trigger{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;transition:all .12s ease;font-family:inherit;}
+    .tabbtn.active,.menu-trigger.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 8px 16px rgba(208,2,27,0.2);} 
+    .menu-group{position:relative;}
+    .menu-trigger{display:flex;align-items:center;gap:6px;}
+    .menu-trigger::after{content:"▾";font-size:11px;line-height:1;}
+    .submenu{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:190px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 24px rgba(0,0,0,0.12);padding:8px;z-index:8;}
+    .submenu .tabbtn{display:block;width:100%;text-align:left;margin-bottom:6px;}
+    .submenu .tabbtn:last-child{margin-bottom:0;}
+    .menu-group:hover .submenu,.menu-group:focus-within .submenu{display:block;}
     .tab-content{display:none;padding:12px;}
     .tab-content.active{display:block;}
     /* customer tab */
@@ -78,13 +85,19 @@
   </header>
 
   <div class="tabbar">
-    <button class="tabbtn" data-tab="material">ข้อมูลวัตถุดิบ</button>
-    <button class="tabbtn" data-tab="product">ข้อมูลสินค้า</button>
-    <button class="tabbtn" data-tab="transport">ข้อมูลรถขนส่ง</button>
-    <button class="tabbtn" data-tab="customer">ข้อมูลลูกค้า</button>
-    <button class="tabbtn" data-tab="dept">ข้อมูลหน่วยงาน</button>
+    <div class="menu-group">
+      <button id="master-trigger" class="menu-trigger" type="button">ข้อมูล Master</button>
+      <div class="submenu">
+        <button class="tabbtn" data-tab="material">ข้อมูลวัตถุดิบ</button>
+        <button class="tabbtn" data-tab="product">ข้อมูลสินค้า</button>
+        <button class="tabbtn" data-tab="transport">ข้อมูลรถ</button>
+        <button class="tabbtn" data-tab="customer">ข้อมูลลูกค้า</button>
+        <button class="tabbtn" data-tab="dept">ข้อมูลหน่วยงาน</button>
+      </div>
+    </div>
     <button class="tabbtn active" data-tab="booking">จองคอนกรีต</button>
     <button class="tabbtn" data-tab="delivery">การจัดส่งคอนกรีต</button>
+    <button class="tabbtn" data-tab="report">รายงาน</button>
   </div>
 
   <div id="tab-material" class="tab-content">
@@ -1085,6 +1098,13 @@
       </div>
     </div>
   </div>
+
+  <div id="tab-report" class="tab-content">
+    <div class="panel">
+      <h3>รายงาน</h3>
+      <p style="margin:0;color:var(--muted);">หน้ารายงาน (ตัวอย่าง) สำหรับสรุปการจองและการจัดส่งคอนกรีต</p>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1145,13 +1165,19 @@
       dept: document.getElementById('tab-dept'),
       booking: document.getElementById('tab-booking'),
       delivery: document.getElementById('tab-delivery'),
+      report: document.getElementById('tab-report'),
     };
+    const masterTrigger = document.getElementById('master-trigger');
+    const masterTabs = ['material', 'product', 'transport', 'customer', 'dept'];
     tabs.forEach(btn=>{
       btn.addEventListener('click',()=>{
         tabs.forEach(b=>b.classList.remove('active'));
         Object.values(panes).forEach(p=>p.classList.remove('active'));
         btn.classList.add('active');
         panes[btn.dataset.tab].classList.add('active');
+        if(masterTrigger){
+          masterTrigger.classList.toggle('active', masterTabs.includes(btn.dataset.tab));
+        }
       });
     });
 

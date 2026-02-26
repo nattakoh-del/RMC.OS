@@ -38,7 +38,300 @@
       padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.18);
       border: 1px solid rgba(255,255,255,0.22); font-weight: 600;
     }
-    .content { padding: 14px 16px 18px; display: grid; gap: 12px; }
+    .app-main { display: grid; grid-template-columns: 138px 1fr; min-height: 620px; transition: grid-template-columns 0.18s ease; align-items: stretch; }
+    .app-main.sidebar-collapsed { grid-template-columns: 0 1fr; }
+    .sidebar {
+      border-right: 1px solid var(--line);
+      background: linear-gradient(180deg, #e9f6ff 0%, #f7fbff 100%);
+      padding: 10px 8px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 6px;
+      overflow: hidden;
+      transition: opacity 0.14s ease, padding 0.14s ease, border-right-color 0.14s ease;
+    }
+    .app-main.sidebar-collapsed .sidebar { opacity: 0; padding: 10px 0; border-right-color: transparent; }
+    .sidebar-toggle {
+      border: 1px solid #b5dcf2;
+      background: #fff;
+      color: #0b6fa8;
+      border-radius: 10px;
+      width: 100%;
+      height: 40px;
+      min-height: 40px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .sidebar-items { display: grid; gap: 3px; align-content: start; }
+    .sidebar-item {
+      border: 1px solid #b5dcf2;
+      background: #fff;
+      color: #0f172a;
+      border-radius: 10px;
+      padding: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: left;
+      width: 100%;
+      height: auto;
+      min-height: 40px;
+      display: flex;
+      align-items: flex-start;
+      line-height: 1.25;
+      white-space: normal;
+      word-break: break-word;
+    }
+    .sidebar-item.active {
+      background: linear-gradient(135deg, #189cd8, #34b4ec);
+      color: #fff;
+      border-color: #189cd8;
+    }
+    .sidebar-item.status-pass {
+      background: #e8fbf1;
+      color: #0c6d3e;
+      border-color: #7ed3a7;
+    }
+    .sidebar-item.status-fail {
+      background: #fff1f3;
+      color: #9d1c31;
+      border-color: #ef9cab;
+    }
+    .sidebar-item.menu-locked {
+      opacity: 0.55;
+    }
+    .work-area { min-width: 0; display: grid; position: relative; }
+    .sidebar-toggle-fab {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 3;
+      border: 1px solid #b5dcf2;
+      background: #fff;
+      color: #0b6fa8;
+      border-radius: 10px;
+      width: 40px;
+      height: 40px;
+      min-height: 40px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(24,156,216,0.18);
+      display: none;
+    }
+    .app-main.sidebar-collapsed .sidebar-toggle-fab { display: inline-flex; align-items: center; justify-content: center; }
+    .trip-meta {
+      display: grid;
+      gap: 4px;
+      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--line);
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .content-panel { display: none; }
+    .content-panel.active { display: grid; gap: 12px; }
+    .profile-wrap {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+    .profile-photo {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: linear-gradient(180deg, #edf7ff 0%, #ffffff 100%);
+      padding: 8px;
+      width: min(220px, 100%);
+      margin: 0 auto;
+    }
+    .profile-photo-frame {
+      width: 100%;
+      aspect-ratio: 3/4;
+      border-radius: 10px;
+      border: 1px dashed #9ccfe6;
+      display: grid;
+      place-items: center;
+      background: #f6fbff;
+      font-size: 11px;
+      text-align: center;
+      color: #2b5f77;
+      line-height: 1.3;
+    }
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .profile-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #fff;
+    }
+    .profile-item.highlight {
+      border-color: #33a9df;
+      background: linear-gradient(120deg, #e8f7ff, #d6f0ff);
+      box-shadow: 0 10px 18px rgba(24,156,216,0.18);
+      font-weight: 700;
+    }
+    .checkin-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(15, 23, 42, 0.48);
+      padding: 16px;
+      z-index: 50;
+    }
+    .checkin-modal.open { display: grid; }
+    .checkin-box {
+      width: min(420px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 20px 36px rgba(15, 23, 42, 0.22);
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+    .checkin-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .step-tag { font-size: 12px; color: var(--muted); font-weight: 700; }
+    .step-view { display: none; gap: 10px; }
+    .step-view.active { display: grid; }
+    .last-status-box {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f8fbff;
+      padding: 12px;
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+    }
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #8ac4e0;
+      background: #eef8ff;
+      color: #0d4f70;
+      border-radius: 999px;
+      padding: 4px 10px;
+      width: fit-content;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .checkin-log-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 4px;
+      color: #365a6b;
+      font-size: 12px;
+    }
+    .warn-box {
+      border: 1px solid #f3c9d0;
+      background: #fff6f8;
+      color: #7a1f2b;
+      border-radius: 12px;
+      padding: 12px;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    .camera-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .camera-panel, .guide-panel {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #f8fbff;
+    }
+    .camera-view {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #dfe7f1;
+    }
+    .guide-figure {
+      width: 100%;
+      aspect-ratio: 3/4;
+      border-radius: 10px;
+      border: 1px dashed #9ccfe6;
+      background: repeating-linear-gradient(135deg, #eaf7ff, #eaf7ff 10px, #f4fbff 10px, #f4fbff 20px);
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      color: #245a72;
+      text-align: center;
+      padding: 8px;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #f8fbff;
+      font-size: 13px;
+    }
+    .plant-list {
+      display: grid;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #fff;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+    .btn-sm {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-sm.primary {
+      border-color: #189cd8;
+      background: linear-gradient(120deg, #189cd8, #34b4ec);
+      color: #fff;
+    }
+    .result-pass {
+      border: 1px solid #9ad8b4;
+      background: #ecfbf2;
+      color: #0d7a45;
+      border-radius: 10px;
+      padding: 9px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .result-fail {
+      border: 1px solid #f2b1be;
+      background: #fff2f5;
+      color: #8c1630;
+      border-radius: 10px;
+      padding: 9px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .content { padding: 14px 14px 18px; display: grid; gap: 12px; }
     .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 24px rgba(24,156,216,0.1); padding: 14px; }
     .card h3 { margin: 0 0 4px; font-size: 16px; }
     .card .sub { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
@@ -95,30 +388,377 @@
     .dp-tab.active { border-color: var(--accent); background: #eef7ff; }
     .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; background: #eef7ff; border-radius: 999px; font-weight: 700; font-size: 11px; }
     .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
-    @media (max-width: 520px) { body { padding: 10px; } .phone-frame { border-radius: 16px; } }
+    .ready-card { display: grid; gap: 10px; }
+    .ready-plant-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(70px, 1fr));
+      gap: 6px;
+    }
+    .ready-plant-tab {
+      border: 1px solid #b5dcf2;
+      background: #fff;
+      color: #0b4f74;
+      border-radius: 10px;
+      padding: 8px 6px;
+      display: grid;
+      gap: 2px;
+      font-size: 11px;
+      text-align: center;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .ready-plant-tab small {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .ready-plant-tab.active {
+      background: linear-gradient(120deg, #189cd8, #34b4ec);
+      color: #fff;
+      border-color: #189cd8;
+    }
+    .ready-plant-tab.active small { color: rgba(255,255,255,0.9); }
+    .ready-table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: auto;
+      background: #fff;
+    }
+    .ready-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 360px;
+    }
+    .ready-table th, .ready-table td {
+      border: 1px solid #d9e8f2;
+      padding: 6px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .ready-table th {
+      background: #edf7ff;
+      color: #0b4f74;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .ready-ready-row td { background: #ecfbf2; color: #0f6d42; font-weight: 700; }
+    .ready-tools { display: grid; gap: 8px; }
+    .ready-tools .ghost-btn { padding: 10px; }
+    .ready-map {
+      border: 1px solid #b9ddf0;
+      border-radius: 12px;
+      background:
+        linear-gradient(150deg, rgba(24,156,216,0.10), rgba(24,156,216,0.02)),
+        repeating-linear-gradient(45deg, #eff8ff, #eff8ff 14px, #f8fcff 14px, #f8fcff 28px);
+      min-height: 170px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ready-map::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border: 2px solid rgba(24,156,216,0.35);
+      border-radius: 12px;
+    }
+    .ready-map-pin {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      transform: translate(-50%, -50%);
+      width: 16px;
+      height: 16px;
+      border-radius: 50% 50% 50% 0;
+      transform-origin: center;
+      rotate: -45deg;
+      background: #e53955;
+      box-shadow: 0 10px 18px rgba(229,57,85,0.35);
+    }
+    .ready-map-label {
+      position: absolute;
+      left: 50%;
+      top: calc(48% + 16px);
+      transform: translateX(-50%);
+      font-size: 12px;
+      font-weight: 700;
+      color: #0b4f74;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid #cce5f4;
+      border-radius: 999px;
+      padding: 4px 10px;
+    }
+    .ready-location {
+      font-size: 11px;
+      color: #1976a2;
+      font-weight: 600;
+    }
+    .dp-list {
+      display: grid;
+      gap: 10px;
+    }
+    .dp-order-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .dp-order-item.active {
+      border-color: #189cd8;
+      box-shadow: 0 12px 20px rgba(24,156,216,0.16);
+      background: #f2faff;
+    }
+    .dp-order-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .dp-order-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+      font-size: 12px;
+      color: #365a6b;
+    }
+    .dp-badge {
+      border: 1px solid #8ac4e0;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0b4f74;
+      background: #eef8ff;
+    }
+    .dp-detail {
+      display: none;
+      gap: 10px;
+    }
+    .dp-detail.active { display: grid; }
+    .dp-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 12px;
+      font-size: 13px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #fff;
+    }
+    .dp-bottom-menu {
+      position: sticky;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: linear-gradient(180deg, rgba(246,251,255,0), #f6fbff 55%);
+      padding-top: 10px;
+      z-index: 2;
+    }
+    .dp-bottom-menu button {
+      border: 1px solid #b5dcf2;
+      border-radius: 10px;
+      padding: 9px 8px;
+      background: #fff;
+      color: #0b4f74;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .dp-bottom-menu button.active {
+      color: #fff;
+      background: linear-gradient(120deg, #189cd8, #34b4ec);
+      border-color: #189cd8;
+    }
+    .gps-status {
+      border: 1px solid #b9e2f4;
+      border-radius: 12px;
+      background: #f3fbff;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+    .gps-step {
+      border: 1px dashed #b9d7e8;
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px;
+      font-size: 12px;
+      color: #365a6b;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .gps-step.active {
+      border-style: solid;
+      border-color: #33a9df;
+      color: #0b4f74;
+      font-weight: 700;
+      background: #eaf7ff;
+    }
+    @media (max-width: 520px) {
+      body { padding: 10px; }
+      .phone-frame { border-radius: 16px; }
+      .app-main { grid-template-columns: 130px 1fr; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .profile-wrap { grid-template-columns: 1fr; }
+      .profile-grid { grid-template-columns: 1fr; }
+      .ready-plant-tabs { grid-template-columns: repeat(2, minmax(90px, 1fr)); }
+      .dp-order-meta, .dp-detail-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
   <div class="phone-frame">
     <header>
-      <h1>แจ้งเตือนความเสี่ยง (Smart Delivery)</h1>
-      <div class="meta">
-        <span class="meta-chip">รหัสทริป #SD-4821</span>
-        <span class="meta-chip">DP 2 / 4 &middot; เวลา 10:30</span>
-        <span class="meta-chip">ไซต์: โครงการ Lumpini Park</span>
-      </div>
+      <h1>Smart Delivery</h1>
     </header>
+    <div class="app-main" id="appMain">
+      <aside class="sidebar" id="sideMenu">
+        <button type="button" id="toggleSidebarBtn" class="sidebar-toggle" aria-label="ย่อเมนู">◀</button>
+        <div class="sidebar-items">
+          <button id="menu-checkin" class="sidebar-item">1. เข้างาน/เลิกงาน</button>
+          <button id="menu-inspect" class="sidebar-item">2. ตรวจรถ</button>
+          <button id="menu-ready" class="sidebar-item">3. ลงวินพร้อมรับงาน</button>
+          <button id="menu-dp" class="sidebar-item">4. รายการใบดีพี</button>
+          <button id="menu-trip" class="sidebar-item">5. รายงานเที่ยว/คิวของคุณ</button>
+          <button id="menu-risk" class="sidebar-item">6. แจ้งความเสี่ยง Site งาน</button>
+          <button id="menu-training" class="sidebar-item">7. Training</button>
+          <button id="menu-driving" class="sidebar-item">8. รายงานพฤติกรรมการขับขี่</button>
+          <button id="menu-profile" class="sidebar-item active">9. ข้อมูลส่วนตัว</button>
+        </div>
+      </aside>
+      <div class="work-area">
+        <button type="button" id="toggleSidebarBtnFab" class="sidebar-toggle-fab" aria-label="ขยายเมนู">▶</button>
+        <div class="content">
+      <div id="profilePanel" class="content-panel active">
+        <div class="section-title">ข้อมูลส่วนตัว</div>
+        <div class="card">
+          <div class="profile-wrap">
+            <div class="profile-photo">
+              <div class="profile-photo-frame">รูปพนักงานหน้าตรง<br>เห็นตั้งแต่หัวถึงหน้าอก</div>
+            </div>
+            <div class="profile-grid">
+              <div class="profile-item"><strong>ชื่อ นามสกุล:</strong> ปิยะวุฒิ วนวาส</div>
+              <div class="profile-item"><strong>รหัสพนักงาน:</strong> 1J0071</div>
+              <div class="profile-item"><strong>เบอร์รถโม่:</strong> CSE2</div>
+              <div class="profile-item"><strong>ขนาดรถโม่:</strong> 2 คิว</div>
+              <div class="profile-item"><strong>เลขทะเบียนรถ:</strong> ทะเบียน-1823</div>
+              <div class="profile-item"><strong>สังกัดโรงงาน:</strong> 31AI - บางซ่อน</div>
+              <div class="profile-item"><strong>วันที่เลิกงานล่าสุด:</strong> 24/02/2026</div>
+              <div class="profile-item"><strong>ชั่วโมงพักผ่อน:</strong> 48:00</div>
+              <div class="profile-item"><strong>วัน/เวลาที่เริ่มทำงานได้:</strong> 25/02/2026 06:00</div>
+              <div class="profile-item"><strong>เวลาที่เข้างาน:</strong> 07:30</div>
+              <div class="profile-item"><strong>เวลาที่เลิกงาน:</strong> 17:45</div>
+              <div class="profile-item"><strong>ชั่วโมงทำงานสะสมในเดือน:</strong> 126 ชั่วโมง</div>
+              <div class="profile-item"><strong>ปริมาณเที่ยวสะสมในเดือน:</strong> 58 เที่ยว</div>
+              <div class="profile-item highlight"><strong>รายได้สะสมในเดือน:</strong> 54,200 บาท</div>
+              <div class="profile-item highlight"><strong>รายได้ (พิเศษ) สะสมในเดือน:</strong> 6,500 บาท</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <div class="content">
-      <div class="section-title">สถานะ DP</div>
+      <div id="readyPanel" class="content-panel">
+        <div class="section-title">ลงวินพร้อมรับงาน</div>
+        <div class="card cpac-surface ready-card">
+          <h3>ตารางรถโม่รอเข้าคิวที่โรงงาน</h3>
+          <div id="readyPlantTabs" class="ready-plant-tabs"></div>
+          <div class="ready-table-wrap">
+            <table class="ready-table">
+              <thead>
+                <tr>
+                  <th>ลำดับ</th>
+                  <th>เบอร์รถ (ไม้)</th>
+                  <th>ชื่อ จขส.</th>
+                  <th>เวลา (นาที)</th>
+                  <th>สถานะ</th>
+                </tr>
+              </thead>
+              <tbody id="readyPlantQueueBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card cpac-surface ready-card">
+          <h3>ตารางรถโม่รอเข้าคิวที่กลุ่มโรงงาน (Pool)</h3>
+          <div class="ready-table-wrap">
+            <table class="ready-table">
+              <thead>
+                <tr>
+                  <th>ลำดับ</th>
+                  <th>เบอร์รถ (ไม้)</th>
+                  <th>ชื่อ จขส.</th>
+                  <th>โรงงาน</th>
+                  <th>เวลา (นาที)</th>
+                </tr>
+              </thead>
+              <tbody id="readyPoolQueueBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card cpac-surface ready-card">
+          <div class="ready-tools">
+            <div class="ready-location">Reset current location</div>
+            <button id="readyRefreshBtn" class="ghost-btn">ดึงข้อมูลคิวรถโม่ใหม่ (105)</button>
+            <button id="readyConfirmBtn" class="primary-btn">พร้อมรับคอนกรีต</button>
+            <div id="readyStatusText" class="result-pass" style="display:none;"></div>
+          </div>
+          <div class="ready-map" aria-label="แผนที่ตำแหน่งพนักงาน">
+            <div class="ready-map-pin"></div>
+            <div id="readyMapLabel" class="ready-map-label">31AI</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="dpPanel" class="content-panel">
+        <div class="section-title">รายการใบดีพี</div>
+        <div class="card cpac-surface">
+          <h3>รายการดีพีที่ได้รับงานแล้ว</h3>
+          <p class="sub">กดรายการ DP เพื่อยืนยันตัวตนด้วยการสแกนใบหน้า</p>
+          <div id="dpList" class="dp-list"></div>
+        </div>
+        <div id="dpDetail" class="card cpac-surface dp-detail">
+          <h3>รายละเอียดใบดีพี</h3>
+        <div id="dpDetailHeader" class="result-pass"></div>
+        <div id="dpDetailGrid" class="dp-detail-grid"></div>
+          <div class="card cpac-surface" style="margin:0;">
+            <h3 style="font-size:14px;">ข้อมูลงานจัดส่ง</h3>
+            <div class="history">
+              <div class="history-item">จุดโหลด: โรงงานต้นทาง (ตรวจเอกสารและสภาพรถแล้ว)</div>
+              <div class="history-item">เส้นทางแนะนำ: ทางด่วนรัชดาฯ - จุดลงพระราม 9</div>
+              <div class="history-item">ข้อกำชับหน้างาน: ประสานผู้คุมเทก่อนเข้าจุดเท 10 นาที</div>
+            </div>
+          </div>
+          <div class="dp-bottom-menu">
+            <button type="button" class="active">รายละเอียด DP</button>
+            <button type="button">งานจัดส่ง</button>
+            <button type="button">ติดตาม GPS</button>
+          </div>
+          <div class="card cpac-surface" style="margin:0;">
+            <h3 style="font-size:14px;">สถานะการจัดส่งคอนกรีตตาม GPS</h3>
+            <div id="gpsStatusBox" class="gps-status"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="riskPanel" class="content-panel">
+      <div class="section-title">ตรวจสอบความเสี่ยง DP ปัจจุบัน</div>
       <div class="dp-tabs">
         <div class="dp-tab active">
           <div class="info-row"><strong>DP02</strong><span class="pill">รอเช็คอิน</span></div>
           <div class="info-row"><span>ระยะทาง 3.2 กม.</span><span class="location"><span class="dot"></span>ตำแหน่งปัจจุบัน</span></div>
-        </div>
-        <div class="dp-tab">
-          <div class="info-row"><strong>DP03</strong><span class="pill" style="background:#e7fbf3;color:#0fb36a;">เสร็จสิ้น</span></div>
-          <div class="info-row"><span>รับทราบ 3/3</span><span class="location"><span class="dot" style="background:#0fb36a"></span>บันทึกแล้ว</span></div>
+          <div class="trip-meta">
+            <div>รหัสทริป: SD-4821</div>
+            <div>DP: 2 / 4 &middot; เวลา 10:30</div>
+            <div>Site: โครงการ Lumpini Park</div>
+          </div>
         </div>
       </div>
 
@@ -187,21 +827,1092 @@
           <div class="history-item">09:42 &middot; รับทราบความเสี่ยงทั้งหมดก่อนออกจาก Plant</div>
         </div>
       </div>
-    </div>
+      </div>
+        </div>
 
-    <div class="action-bar">
-      <div style="font-size:12px; color: var(--muted); font-weight:600;">ต้องกดรับทราบทุกความเสี่ยงก่อนเริ่มงาน DP02</div>
-      <button class="primary-btn" id="startBtn" disabled>เช็คอินไซต์ / เริ่มงาน</button>
+        <div id="riskActionBar" class="action-bar" style="display:none;">
+          <div style="font-size:12px; color: var(--muted); font-weight:600;">ต้องกดรับทราบทุกความเสี่ยงก่อนเริ่มงาน DP02</div>
+          <button class="primary-btn" id="startBtn" disabled>เช็คอินไซต์ / เริ่มงาน</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="checkinModal" class="checkin-modal" aria-hidden="true">
+    <div class="checkin-box">
+      <div class="checkin-head">
+        <div>
+          <h3 style="margin:0;font-size:18px;">1. เข้างาน / เลิกงาน</h3>
+          <div id="checkinStepTag" class="step-tag">ขั้นตอนที่ 1/4</div>
+        </div>
+        <button type="button" id="closeCheckinModal" class="btn-sm">ปิด</button>
+      </div>
+
+      <div id="checkinStep0" class="step-view active">
+        <div class="last-status-box">
+          <div><strong>สถานะล่าสุด (กดเมนู เข้างาน/เลิกงาน)</strong></div>
+          <div id="checkinModeChip" class="status-chip">รายการถัดไป: Check in</div>
+          <div id="checkinLastStatusAt">ยังไม่มีข้อมูลการกดล่าสุด</div>
+          <div style="font-size:12px;color:var(--muted);">บันทึกเวลาในวันนี้</div>
+          <ul id="checkinTodayLog" class="checkin-log-list">
+            <li>ยังไม่มีรายการ</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="checkinStep1" class="step-view">
+        <div class="warn-box">
+          โปรดประเมินความพร้อมก่อนดำเนินการ<br>
+          - ความดันโลหิตปกติ ไม่เกิน 140/90<br>
+          - ระดับแอลกอฮอล์เป็นศูนย์<br>
+          - ไม่มีอาการเหนื่อยล้า
+        </div>
+        <label class="ack-row"><input id="healthAck" type="checkbox"> <span id="healthAckLabel">รับทราบและยืนยันว่าพร้อมเข้างาน</span></label>
+      </div>
+
+      <div id="checkinStep2" class="step-view">
+        <div class="camera-grid">
+          <div class="camera-panel">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">ถ่ายภาพจากกล้องเท่านั้น (ไม่รองรับการอัปโหลดจากอัลบั้ม)</div>
+            <video id="selfieVideo" class="camera-view" autoplay playsinline muted></video>
+            <img id="selfiePreview" class="camera-view" alt="preview" style="display:none;">
+          </div>
+          <div class="guide-panel">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">ภาพตัวอย่างการถ่ายเต็มตัว</div>
+            <div class="guide-figure">ยืนเต็มตัวในกรอบ<br>เห็นใบหน้า ชุดทำงาน และรองเท้า<br>จากหัวจรดเท้า</div>
+          </div>
+        </div>
+        <canvas id="selfieCanvas" style="display:none;"></canvas>
+      </div>
+
+      <div id="checkinStep3" class="step-view">
+        <div class="result-pass">AI ตรวจสอบแล้ว: ตรงกับเจ้าของ User (Match 98.4%)</div>
+        <div class="detail-grid">
+          <div><strong>ชื่อพนักงาน:</strong> ปิยะวุฒิ วนวาส</div>
+          <div><strong>รหัสพนักงาน:</strong> 1J0071</div>
+          <div><strong>เบอร์รถ:</strong> CSE2</div>
+          <div><strong>ขนาดรถ:</strong> 2 คิว</div>
+          <div><strong>เลขทะเบียนรถ:</strong> ทะเบียน-1823</div>
+          <div><strong>โรงงานที่สังกัด:</strong> 31AI - บางซ่อน</div>
+        </div>
+        <div class="plant-list">
+          <div id="plantSelectLabel" style="font-size:12px;color:var(--muted);">เลือกโรงงานในรัศมีที่กำหนดเพื่อ Check in</div>
+          <label><input type="radio" name="nearPlant" value="31AI - บางซ่อน"> 31AI - บางซ่อน (0.8 กม.)</label>
+          <label><input type="radio" name="nearPlant" value="31EM - บางซ่อน 3"> 31EM - บางซ่อน 3 (1.1 กม.)</label>
+          <label><input type="radio" name="nearPlant" value="31N3 - บางซ่อน 4"> 31N3 - บางซ่อน 4 (1.6 กม.)</label>
+          <label><input type="radio" name="nearPlant" value="ZZA5 - บางซ่อน 5"> ZZA5 - บางซ่อน 5 (2.0 กม.)</label>
+        </div>
+      </div>
+
+      <div id="checkinStep4" class="step-view">
+        <div id="checkinResultTitle" class="result-pass">บันทึกการเข้างานสำเร็จแล้ว</div>
+        <div id="checkinSuccessText" class="warn-box" style="background:#f3fbff;border-color:#b9e2f4;color:#114d68;">
+          ระบบบันทึกการเข้างานเรียบร้อย
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="checkinSecondaryBtn" class="btn-sm">ย้อนกลับ</button>
+        <button type="button" id="checkinPrimaryBtn" class="btn-sm primary">ถัดไป</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="inspectModal" class="checkin-modal" aria-hidden="true">
+    <div class="checkin-box">
+      <div class="checkin-head">
+        <div>
+          <h3 style="margin:0;font-size:18px;">2. ตรวจรถ</h3>
+          <div id="inspectStepTag" class="step-tag">รูปที่ 1/5</div>
+        </div>
+        <button type="button" id="closeInspectModal" class="btn-sm">ปิด</button>
+      </div>
+
+      <div class="camera-grid">
+        <div class="camera-panel">
+          <div id="inspectShotTitle" style="font-size:13px;font-weight:700;margin-bottom:6px;">1) รูปรถด้านหน้า</div>
+          <video id="inspectVideo" class="camera-view" autoplay playsinline muted></video>
+          <img id="inspectPreview" class="camera-view" alt="inspect-preview" style="display:none;">
+          <canvas id="inspectCanvas" style="display:none;"></canvas>
+        </div>
+        <div class="guide-panel">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">ตัวอย่างภาพที่ต้องการ</div>
+          <div id="inspectGuideText" class="guide-figure">ถ่ายมุมด้านหน้ารถให้เห็นทะเบียนและตัวรถชัดเจน</div>
+        </div>
+      </div>
+
+      <div id="inspectAiResult" class="warn-box" style="display:none;"></div>
+
+      <div class="modal-actions">
+        <button type="button" id="inspectRetakeBtn" class="btn-sm" style="display:none;">ถ่ายรูปใหม่</button>
+        <button type="button" id="inspectCannotRetakeBtn" class="btn-sm" style="display:none;">ไม่สามารถถ่ายรูปใหม่ได้</button>
+        <button type="button" id="inspectCaptureBtn" class="btn-sm primary">ถ่ายภาพ</button>
+        <button type="button" id="inspectNextBtn" class="btn-sm primary" style="display:none;">ถัดไป</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dpScanModal" class="checkin-modal" aria-hidden="true">
+    <div class="checkin-box">
+      <div class="checkin-head">
+        <div>
+          <h3 style="margin:0;font-size:18px;">ยืนยันตัวตนก่อนเปิด DP</h3>
+          <div id="dpScanStepTag" class="step-tag">สแกนใบหน้าด้วยกล้อง</div>
+        </div>
+        <button type="button" id="closeDpScanModal" class="btn-sm">ปิด</button>
+      </div>
+
+      <div class="warn-box" id="dpScanHint">
+        ระบบจะเปิดกล้องทันทีเพื่อยืนยันตัวตนผู้รับ DP<br>
+        ตรวจสอบความถูกต้องของเลข DP และพนักงานที่รับงาน
+      </div>
+
+      <div class="camera-grid">
+        <div class="camera-panel">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">DP ที่เลือก: <strong id="scanDpIdText">-</strong></div>
+          <video id="dpScanVideo" class="camera-view" autoplay playsinline muted></video>
+          <img id="dpScanPreview" class="camera-view" alt="dp-scan-preview" style="display:none;">
+          <canvas id="dpScanCanvas" style="display:none;"></canvas>
+        </div>
+        <div class="guide-panel">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">คำแนะนำการสแกน</div>
+          <div class="guide-figure">มองกล้องตรง<br>แสงเพียงพอ<br>ห้ามสวมหน้ากากระหว่างยืนยันตัวตน</div>
+        </div>
+      </div>
+
+      <div id="dpScanResult" class="result-pass" style="display:none;"></div>
+      <div class="modal-actions">
+        <button type="button" id="dpScanCaptureBtn" class="btn-sm primary">สแกนใบหน้า</button>
+        <button type="button" id="dpScanOpenBtn" class="btn-sm primary" style="display:none;">เปิดรายละเอียดดีพี</button>
+      </div>
     </div>
   </div>
 
   <script>
+    const appMain = document.getElementById('appMain');
+    const sideMenu = document.getElementById('sideMenu');
+    const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+    const toggleSidebarBtnFab = document.getElementById('toggleSidebarBtnFab');
     const acks = Array.from(document.querySelectorAll('.ack'));
     const startBtn = document.getElementById('startBtn');
     const gps = document.getElementById('gps');
     const history = document.getElementById('history');
     const addBtn = document.getElementById('addRiskBtn');
     const requestBtn = document.getElementById('requestBtn');
+    const menuCheckin = document.getElementById('menu-checkin');
+    const menuInspect = document.getElementById('menu-inspect');
+    const menuReady = document.getElementById('menu-ready');
+    const menuDp = document.getElementById('menu-dp');
+    const menuTrip = document.getElementById('menu-trip');
+    const menuRisk = document.getElementById('menu-risk');
+    const menuTraining = document.getElementById('menu-training');
+    const menuDriving = document.getElementById('menu-driving');
+    const menuProfile = document.getElementById('menu-profile');
+    const checkinModal = document.getElementById('checkinModal');
+    const closeCheckinModal = document.getElementById('closeCheckinModal');
+    const checkinStepTag = document.getElementById('checkinStepTag');
+    const checkinLastStatusAt = document.getElementById('checkinLastStatusAt');
+    const checkinModeChip = document.getElementById('checkinModeChip');
+    const checkinTodayLog = document.getElementById('checkinTodayLog');
+    const checkinPrimaryBtn = document.getElementById('checkinPrimaryBtn');
+    const checkinSecondaryBtn = document.getElementById('checkinSecondaryBtn');
+    const healthAck = document.getElementById('healthAck');
+    const healthAckLabel = document.getElementById('healthAckLabel');
+    const plantSelectLabel = document.getElementById('plantSelectLabel');
+    const selfieVideo = document.getElementById('selfieVideo');
+    const selfieCanvas = document.getElementById('selfieCanvas');
+    const selfiePreview = document.getElementById('selfiePreview');
+    const checkinResultTitle = document.getElementById('checkinResultTitle');
+    const checkinSuccessText = document.getElementById('checkinSuccessText');
+    const riskPanel = document.getElementById('riskPanel');
+    const profilePanel = document.getElementById('profilePanel');
+    const readyPanel = document.getElementById('readyPanel');
+    const riskActionBar = document.getElementById('riskActionBar');
+    const readyPlantTabs = document.getElementById('readyPlantTabs');
+    const readyPlantQueueBody = document.getElementById('readyPlantQueueBody');
+    const readyPoolQueueBody = document.getElementById('readyPoolQueueBody');
+    const readyRefreshBtn = document.getElementById('readyRefreshBtn');
+    const readyConfirmBtn = document.getElementById('readyConfirmBtn');
+    const readyStatusText = document.getElementById('readyStatusText');
+    const readyMapLabel = document.getElementById('readyMapLabel');
+    const dpPanel = document.getElementById('dpPanel');
+    const dpList = document.getElementById('dpList');
+    const dpDetail = document.getElementById('dpDetail');
+    const dpDetailHeader = document.getElementById('dpDetailHeader');
+    const dpDetailGrid = document.getElementById('dpDetailGrid');
+    const gpsStatusBox = document.getElementById('gpsStatusBox');
+    const inspectModal = document.getElementById('inspectModal');
+    const closeInspectModal = document.getElementById('closeInspectModal');
+    const inspectStepTag = document.getElementById('inspectStepTag');
+    const inspectShotTitle = document.getElementById('inspectShotTitle');
+    const inspectGuideText = document.getElementById('inspectGuideText');
+    const inspectVideo = document.getElementById('inspectVideo');
+    const inspectPreview = document.getElementById('inspectPreview');
+    const inspectCanvas = document.getElementById('inspectCanvas');
+    const inspectAiResult = document.getElementById('inspectAiResult');
+    const inspectRetakeBtn = document.getElementById('inspectRetakeBtn');
+    const inspectCannotRetakeBtn = document.getElementById('inspectCannotRetakeBtn');
+    const inspectCaptureBtn = document.getElementById('inspectCaptureBtn');
+    const inspectNextBtn = document.getElementById('inspectNextBtn');
+    const dpScanModal = document.getElementById('dpScanModal');
+    const closeDpScanModal = document.getElementById('closeDpScanModal');
+    const dpScanStepTag = document.getElementById('dpScanStepTag');
+    const scanDpIdText = document.getElementById('scanDpIdText');
+    const dpScanVideo = document.getElementById('dpScanVideo');
+    const dpScanPreview = document.getElementById('dpScanPreview');
+    const dpScanCanvas = document.getElementById('dpScanCanvas');
+    const dpScanResult = document.getElementById('dpScanResult');
+    const dpScanCaptureBtn = document.getElementById('dpScanCaptureBtn');
+    const dpScanOpenBtn = document.getElementById('dpScanOpenBtn');
+    const checkinSteps = [
+      document.getElementById('checkinStep0'),
+      document.getElementById('checkinStep1'),
+      document.getElementById('checkinStep2'),
+      document.getElementById('checkinStep3'),
+      document.getElementById('checkinStep4')
+    ];
+    let checkinStepIndex = 0;
+    let cameraStream = null;
+    let selfieCaptured = false;
+    let currentAttendanceAction = 'IN';
+    const ATTENDANCE_KEY = 'sda_attendance_logs_v1';
+    const VEHICLE_INSPECTION_KEY = 'sda_vehicle_inspection_logs_v1';
+    const inspectShots = [
+      { key: 'front', title: '1) รูปรถด้านหน้า', guide: 'ถ่ายมุมด้านหน้ารถให้เห็นทะเบียนและตัวรถชัดเจน' },
+      { key: 'rear', title: '2) รูปรถด้านหลัง', guide: 'ถ่ายมุมด้านหลังรถให้เห็นท้ายรถและทะเบียนชัดเจน' },
+      { key: 'left', title: '3) รูปรถด้านซ้าย', guide: 'ถ่ายด้านซ้ายทั้งคันให้เห็นล้อและตัวถังครบ' },
+      { key: 'right', title: '4) รูปรถด้านขวา', guide: 'ถ่ายด้านขวาทั้งคันให้เห็นล้อและตัวถังครบ' },
+      { key: 'dash', title: '5) รูปรถหน้าคอนโซล', guide: 'ถ่ายหน้าคอนโซลให้เห็นมาตรวัดและสภาพภายในชัดเจน' }
+    ];
+    let inspectIndex = 0;
+    let inspectStream = null;
+    let inspectCaptured = false;
+    let inspectRecords = [];
+    const readyDriver = {
+      name: 'ปิยะวุฒิ วนวาส',
+      truckNo: 'CSE2',
+      homePlantId: '31AI'
+    };
+    const readyPlantGroup = [
+      { id: '31N3', label: '31N3-บางซ่อน 4', alias: '31N3' },
+      { id: 'ZZA5', label: 'ZZA5-บางซ่อน 5', alias: 'ZZA5' },
+      { id: '31EM', label: '31EM-บางซ่อน 3', alias: '31EM' },
+      { id: '31AI', label: '31AI-บางซ่อน', alias: '31AI' }
+    ];
+    const readyQueueRows = [
+      { plantId: '31AI', truck: '8302 (7)', name: 'ศักดา เอี่ยมใจ', waitMin: 11, status: 'พิมพ์ดีพี' },
+      { plantId: '31AI', truck: '5927 (7)', name: 'ทองจันทร์ สังวะลี', waitMin: 4, status: 'ออกดีพี' },
+      { plantId: '31N3', truck: '5886 (2)', name: 'นิพนธ์ ศรีเสริมสุข', waitMin: 178, status: 'รอคิว' },
+      { plantId: '31EM', truck: '6643 (2)', name: 'ธนดล บุราณวงศ์', waitMin: 172, status: 'รอคิว' },
+      { plantId: 'ZZA5', truck: '6485 (2)', name: 'สุรชัย ส่งสุข', waitMin: 166, status: 'รอคิว' },
+      { plantId: '31AI', truck: '9812 (2)', name: 'เอ มอมั่นทร์', waitMin: 82, status: 'รอคิว' },
+      { plantId: '31N3', truck: '9422 (2)', name: 'สมชาติ ไชยประ', waitMin: 50, status: 'รอคิว' },
+      { plantId: '31EM', truck: '9423 (2)', name: 'ชัยรัตน์ ไพรงษ์ขจิตวรธิติ', waitMin: 40, status: 'รอคิว' },
+      { plantId: 'ZZA5', truck: '9696 (2)', name: 'สุเทพ ขุนเพ็ชร', waitMin: 25, status: 'รอคิว' },
+      { plantId: '31AI', truck: '9420 (2)', name: 'สินีพงศ์ วีรวัฒนพงศ์', waitMin: 8, status: 'รอคิว' }
+    ];
+    let readySelectedPlantId = readyDriver.homePlantId;
+    let readyQueueStamp = 105;
+    let readyCheckedInRecord = null;
+    const dpOrders = [
+      { id: 'DP-240226-001', site: 'โครงการ Lumpini Park', plant: '31AI - บางซ่อน', volume: '6 คิว', eta: '10:30', customer: 'LPN' },
+      { id: 'DP-240226-002', site: 'โครงการ The Origin รัชดา', plant: '31EM - บางซ่อน 3', volume: '5 คิว', eta: '11:15', customer: 'Origin' },
+      { id: 'DP-240226-003', site: 'โครงการ Noble Create', plant: '31N3 - บางซ่อน 4', volume: '4 คิว', eta: '12:00', customer: 'Noble' }
+    ];
+    const dpGpsSteps = ['ออกจากโรงงาน', 'กำลังเดินทางไปไซต์', 'ถึงจุดเทคอนกรีต', 'เทคอนกรีตเสร็จสิ้น'];
+    let selectedDpOrder = null;
+    let dpScanStream = null;
+    let dpFaceCaptured = false;
+
+    function loadAttendanceLogs() {
+      try {
+        return JSON.parse(localStorage.getItem(ATTENDANCE_KEY) || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveAttendanceLogs(logs) {
+      localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(logs));
+    }
+
+    function loadInspectLogs() {
+      try {
+        return JSON.parse(localStorage.getItem(VEHICLE_INSPECTION_KEY) || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveInspectLogs(logs) {
+      localStorage.setItem(VEHICLE_INSPECTION_KEY, JSON.stringify(logs));
+    }
+
+    function getDayKey(dateObj) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const d = String(dateObj.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function formatDateTime(iso) {
+      return new Date(iso).toLocaleString('th-TH');
+    }
+
+    function getTodayAttendanceLogs() {
+      const today = getDayKey(new Date());
+      return loadAttendanceLogs().filter(item => item.dayKey === today);
+    }
+
+    function getLatestCheckedInPlant(todayLogs) {
+      for (let i = todayLogs.length - 1; i >= 0; i -= 1) {
+        if (todayLogs[i].type === 'IN') return todayLogs[i].plant;
+      }
+      return '31AI - บางซ่อน';
+    }
+
+    function getTodayInspectLogs() {
+      const today = getDayKey(new Date());
+      return loadInspectLogs().filter(item => item.dayKey === today);
+    }
+
+    function getTodayInspectStatus() {
+      const todayLogs = getTodayInspectLogs();
+      if (!todayLogs.length) return 'none';
+      const last = todayLogs[todayLogs.length - 1];
+      return last.status;
+    }
+
+    function isCheckedInNow() {
+      const todayAttendance = getTodayAttendanceLogs();
+      if (!todayAttendance.length) return false;
+      return todayAttendance[todayAttendance.length - 1].type === 'IN';
+    }
+
+    function canAccessMenu(menuNumber) {
+      const checkedIn = isCheckedInNow();
+      const inspectStatus = getTodayInspectStatus();
+      if (menuNumber >= 2 && menuNumber <= 8 && !checkedIn) return false;
+      if (menuNumber >= 3 && menuNumber <= 8 && inspectStatus !== 'pass') return false;
+      return true;
+    }
+
+    function showMenuLockReason(menuNumber) {
+      const checkedIn = isCheckedInNow();
+      const inspectStatus = getTodayInspectStatus();
+      if (menuNumber >= 2 && menuNumber <= 8 && !checkedIn) {
+        alert('กรุณา Check in เข้างานก่อน จึงจะใช้งานเมนู 2-8 ได้');
+        return;
+      }
+      if (menuNumber >= 3 && menuNumber <= 8 && inspectStatus !== 'pass') {
+        alert('กรุณาตรวจรถให้ผ่านก่อน จึงจะใช้งานเมนู 3-8 ได้');
+      }
+    }
+
+    function refreshMenuStatus() {
+      menuCheckin.classList.remove('status-pass', 'status-fail');
+      menuInspect.classList.remove('status-pass', 'status-fail');
+      [menuInspect, menuReady, menuDp, menuTrip, menuRisk, menuTraining, menuDriving].forEach(btn => btn.classList.remove('menu-locked'));
+
+      const inspectStatus = getTodayInspectStatus();
+      if (inspectStatus === 'pass') menuInspect.classList.add('status-pass');
+      if (inspectStatus === 'fail') {
+        menuInspect.classList.add('status-fail');
+        menuCheckin.classList.add('status-fail');
+      }
+
+      const todayAttendance = getTodayAttendanceLogs();
+      const latestAttendance = todayAttendance.length ? todayAttendance[todayAttendance.length - 1] : null;
+      if (latestAttendance && latestAttendance.type === 'IN' && inspectStatus !== 'fail') {
+        menuCheckin.classList.add('status-pass');
+      }
+
+      if (!canAccessMenu(2)) menuInspect.classList.add('menu-locked');
+      if (!canAccessMenu(3)) menuReady.classList.add('menu-locked');
+      if (!canAccessMenu(4)) menuDp.classList.add('menu-locked');
+      if (!canAccessMenu(5)) menuTrip.classList.add('menu-locked');
+      if (!canAccessMenu(6)) menuRisk.classList.add('menu-locked');
+      if (!canAccessMenu(7)) menuTraining.classList.add('menu-locked');
+      if (!canAccessMenu(8)) menuDriving.classList.add('menu-locked');
+    }
+
+    function getPlantLabelById(plantId) {
+      const found = readyPlantGroup.find(item => item.id === plantId);
+      return found ? found.label : plantId;
+    }
+
+    function renderReadyPlantTabs() {
+      readyPlantTabs.innerHTML = '';
+      readyPlantGroup.forEach(plant => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ready-plant-tab' + (plant.id === readySelectedPlantId ? ' active' : '');
+        btn.innerHTML = `${plant.alias}<small>${plant.label.replace(plant.alias + '-', '')}</small>`;
+        btn.addEventListener('click', () => {
+          readySelectedPlantId = plant.id;
+          readyMapLabel.textContent = plant.alias;
+          renderReadyPlantTabs();
+          renderReadyTables();
+        });
+        readyPlantTabs.appendChild(btn);
+      });
+    }
+
+    function renderReadyRows(items, targetBody, includePlantCol) {
+      targetBody.innerHTML = '';
+      if (!items.length) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="${includePlantCol ? 5 : 5}" style="text-align:center;color:var(--muted);">ไม่พบข้อมูลคิวรถ</td>`;
+        targetBody.appendChild(tr);
+        return;
+      }
+      items.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+        const plantCol = includePlantCol ? `<td>${getPlantLabelById(item.plantId)}</td>` : '';
+        const statusCol = includePlantCol ? '' : `<td>${item.status}</td>`;
+        tr.className = item.status === 'พร้อมรับคอนกรีต' ? 'ready-ready-row' : '';
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${item.truck}</td>
+          <td>${item.name}</td>
+          ${plantCol}
+          <td>${item.waitMin}</td>
+          ${statusCol}
+        `;
+        targetBody.appendChild(tr);
+      });
+    }
+
+    function renderReadyTables() {
+      const basePlantRows = readyQueueRows
+        .filter(item => item.plantId === readySelectedPlantId)
+        .sort((a, b) => b.waitMin - a.waitMin);
+      const basePoolRows = [...readyQueueRows].sort((a, b) => b.waitMin - a.waitMin);
+
+      const plantRows = [...basePlantRows];
+      const poolRows = [...basePoolRows];
+      if (readyCheckedInRecord) {
+        const ownRow = {
+          plantId: readyCheckedInRecord.plantId,
+          truck: readyDriver.truckNo,
+          name: readyDriver.name,
+          waitMin: 0,
+          status: 'พร้อมรับคอนกรีต'
+        };
+        if (readyCheckedInRecord.plantId === readySelectedPlantId) {
+          plantRows.unshift(ownRow);
+        }
+        poolRows.unshift(ownRow);
+      }
+
+      renderReadyRows(plantRows, readyPlantQueueBody, false);
+      renderReadyRows(poolRows, readyPoolQueueBody, true);
+    }
+
+    function updateReadyRefreshLabel() {
+      readyRefreshBtn.textContent = `ดึงข้อมูลคิวรถโม่ใหม่ (${readyQueueStamp})`;
+    }
+
+    function renderDpGpsStatus() {
+      gpsStatusBox.innerHTML = '';
+      const activeIndex = Math.floor(Math.random() * dpGpsSteps.length);
+      dpGpsSteps.forEach((step, idx) => {
+        const row = document.createElement('div');
+        row.className = 'gps-step' + (idx === activeIndex ? ' active' : '');
+        row.innerHTML = `<span>${idx + 1}. ${step}</span><span>${idx <= activeIndex ? 'อัปเดตแล้ว' : 'รออัปเดต'}</span>`;
+        gpsStatusBox.appendChild(row);
+      });
+    }
+
+    function renderDpDetail(order) {
+      dpDetail.classList.add('active');
+      dpDetailHeader.textContent = `AI ยืนยันสำเร็จ: ${order.id} ตรงกับพนักงาน ${readyDriver.name}`;
+      dpDetailGrid.innerHTML = `
+        <div><strong>เลขที่ DP:</strong> ${order.id}</div>
+        <div><strong>ลูกค้า:</strong> ${order.customer}</div>
+        <div><strong>Site งาน:</strong> ${order.site}</div>
+        <div><strong>โรงงาน:</strong> ${order.plant}</div>
+        <div><strong>พนักงานขับรถ:</strong> ${readyDriver.name}</div>
+        <div><strong>หมายเลขรถ:</strong> ${readyDriver.truckNo}</div>
+        <div><strong>ปริมาณคอนกรีต:</strong> ${order.volume}</div>
+        <div><strong>เวลานัดหมาย:</strong> ${order.eta}</div>
+      `;
+      renderDpGpsStatus();
+    }
+
+    function renderDpList() {
+      dpList.innerHTML = '';
+      dpOrders.forEach(order => {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'dp-order-item' + (selectedDpOrder && selectedDpOrder.id === order.id ? ' active' : '');
+        item.innerHTML = `
+          <div class="dp-order-head">
+            <strong>${order.id}</strong>
+            <span class="dp-badge">ได้รับงานแล้ว</span>
+          </div>
+          <div class="dp-order-meta">
+            <div><strong>Site:</strong> ${order.site}</div>
+            <div><strong>โรงงาน:</strong> ${order.plant}</div>
+            <div><strong>ปริมาณ:</strong> ${order.volume}</div>
+            <div><strong>เวลานัด:</strong> ${order.eta}</div>
+          </div>
+        `;
+        item.addEventListener('click', () => openDpScanModal(order));
+        dpList.appendChild(item);
+      });
+    }
+
+    function switchMainPanel(panelName) {
+      riskPanel.classList.remove('active');
+      profilePanel.classList.remove('active');
+      readyPanel.classList.remove('active');
+      dpPanel.classList.remove('active');
+      menuRisk.classList.remove('active');
+      menuProfile.classList.remove('active');
+      menuReady.classList.remove('active');
+      menuDp.classList.remove('active');
+      if (panelName === 'risk') {
+        riskPanel.classList.add('active');
+        menuRisk.classList.add('active');
+        riskActionBar.style.display = 'grid';
+      } else if (panelName === 'dp') {
+        dpPanel.classList.add('active');
+        menuDp.classList.add('active');
+        riskActionBar.style.display = 'none';
+      } else if (panelName === 'ready') {
+        readyPanel.classList.add('active');
+        menuReady.classList.add('active');
+        riskActionBar.style.display = 'none';
+      } else {
+        profilePanel.classList.add('active');
+        menuProfile.classList.add('active');
+        riskActionBar.style.display = 'none';
+      }
+    }
+
+    function getNextAttendanceAction(todayLogs) {
+      if (!todayLogs.length) return 'IN';
+      const last = todayLogs[todayLogs.length - 1];
+      return last.type === 'IN' ? 'OUT' : 'IN';
+    }
+
+    function renderTodayAttendance(todayLogs) {
+      if (!todayLogs.length) {
+        checkinTodayLog.innerHTML = '<li>ยังไม่มีรายการ</li>';
+        return;
+      }
+      checkinTodayLog.innerHTML = '';
+      todayLogs.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.type === 'IN' ? 'Check in' : 'Check out'} • ${formatDateTime(item.ts)} • ${item.plant}`;
+        checkinTodayLog.appendChild(li);
+      });
+    }
+
+    function updateSidebarButton() {
+      const collapsed = appMain.classList.contains('sidebar-collapsed');
+      toggleSidebarBtn.textContent = collapsed ? '▶' : '◀';
+      toggleSidebarBtn.setAttribute('aria-label', collapsed ? 'ขยายเมนู' : 'ย่อเมนู');
+      toggleSidebarBtn.setAttribute('aria-expanded', String(!collapsed));
+      sideMenu.setAttribute('aria-hidden', String(collapsed));
+      toggleSidebarBtnFab.setAttribute('aria-expanded', String(!collapsed));
+    }
+    function toggleSidebar() {
+      appMain.classList.toggle('sidebar-collapsed');
+      updateSidebarButton();
+    }
+    function collapseSidebar() {
+      if (!appMain.classList.contains('sidebar-collapsed')) {
+        appMain.classList.add('sidebar-collapsed');
+        updateSidebarButton();
+      }
+    }
+    toggleSidebarBtn.addEventListener('click', toggleSidebar);
+    toggleSidebarBtnFab.addEventListener('click', toggleSidebar);
+    updateSidebarButton();
+    refreshMenuStatus();
+    renderReadyPlantTabs();
+    renderReadyTables();
+    updateReadyRefreshLabel();
+    renderDpList();
+    switchMainPanel('profile');
+    menuRisk.addEventListener('click', () => {
+      if (!canAccessMenu(6)) {
+        showMenuLockReason(6);
+        return;
+      }
+      collapseSidebar();
+      switchMainPanel('risk');
+    });
+    menuProfile.addEventListener('click', () => {
+      collapseSidebar();
+      switchMainPanel('profile');
+    });
+
+    async function startCamera() {
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+        selfieVideo.srcObject = cameraStream;
+      } catch (err) {
+        alert('ไม่สามารถเปิดกล้องได้ กรุณาอนุญาตสิทธิ์กล้อง');
+      }
+    }
+
+    async function startInspectCamera() {
+      try {
+        inspectStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
+        inspectVideo.srcObject = inspectStream;
+      } catch (err) {
+        alert('ไม่สามารถเปิดกล้องได้ กรุณาอนุญาตสิทธิ์กล้อง');
+      }
+    }
+
+    function stopCamera() {
+      if (!cameraStream) return;
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+      selfieVideo.srcObject = null;
+    }
+
+    function stopInspectCamera() {
+      if (!inspectStream) return;
+      inspectStream.getTracks().forEach(track => track.stop());
+      inspectStream = null;
+      inspectVideo.srcObject = null;
+    }
+
+    async function startDpScanCamera() {
+      try {
+        dpScanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        dpScanVideo.srcObject = dpScanStream;
+      } catch (err) {
+        alert('ไม่สามารถเปิดกล้องเพื่อยืนยันตัวตนได้ กรุณาอนุญาตสิทธิ์กล้อง');
+      }
+    }
+
+    function stopDpScanCamera() {
+      if (!dpScanStream) return;
+      dpScanStream.getTracks().forEach(track => track.stop());
+      dpScanStream = null;
+      dpScanVideo.srcObject = null;
+    }
+
+    async function openDpScanModal(order) {
+      selectedDpOrder = order;
+      dpFaceCaptured = false;
+      scanDpIdText.textContent = order.id;
+      dpScanResult.style.display = 'none';
+      dpScanOpenBtn.style.display = 'none';
+      dpScanCaptureBtn.style.display = 'inline-flex';
+      dpScanCaptureBtn.textContent = 'สแกนใบหน้า';
+      dpScanPreview.style.display = 'none';
+      dpScanVideo.style.display = 'block';
+      dpScanStepTag.textContent = 'สแกนใบหน้าด้วยกล้อง';
+      dpScanModal.classList.add('open');
+      dpScanModal.setAttribute('aria-hidden', 'false');
+      await startDpScanCamera();
+    }
+
+    function closeDpScanFlow() {
+      stopDpScanCamera();
+      dpScanModal.classList.remove('open');
+      dpScanModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function showCheckinStep(index) {
+      checkinStepIndex = index;
+      checkinSteps.forEach((step, idx) => step.classList.toggle('active', idx === index));
+      if (index === 0) {
+        checkinStepTag.textContent = `ก่อนเริ่มขั้นตอน ${currentAttendanceAction === 'IN' ? 'Check in' : 'Check out'}`;
+      } else {
+        checkinStepTag.textContent = `ขั้นตอนที่ ${index}/4`;
+      }
+      checkinSecondaryBtn.style.display = index <= 1 ? 'none' : 'inline-flex';
+
+      if (index === 0) {
+        checkinPrimaryBtn.textContent = currentAttendanceAction === 'IN' ? 'ดำเนินการต่อ' : 'Check out ทันที';
+      } else if (index === 2) {
+        checkinPrimaryBtn.textContent = selfieCaptured ? 'ไปขั้นตอนถัดไป' : 'ถ่ายภาพ';
+      } else if (index === 3) {
+        checkinPrimaryBtn.textContent = currentAttendanceAction === 'IN' ? 'ยืนยัน Check in' : 'ยืนยัน Check out';
+      } else if (index === 4) {
+        checkinPrimaryBtn.textContent = 'เสร็จสิ้น';
+      } else {
+        checkinPrimaryBtn.textContent = 'ถัดไป';
+      }
+    }
+
+    function openCheckinModal() {
+      if (getTodayInspectStatus() === 'fail') {
+        alert('ตรวจรถไม่ผ่านเกณฑ์ Safety วันนี้ ไม่สามารถทำงานในวันนั้นได้');
+        return;
+      }
+      const todayLogs = getTodayAttendanceLogs();
+      const lastRecord = todayLogs.length ? todayLogs[todayLogs.length - 1] : null;
+      currentAttendanceAction = getNextAttendanceAction(todayLogs);
+      checkinModeChip.textContent = `รายการถัดไป: ${currentAttendanceAction === 'IN' ? 'Check in' : 'Check out'}`;
+      checkinLastStatusAt.textContent = lastRecord
+        ? `ล่าสุด: ${lastRecord.type === 'IN' ? 'Check in' : 'Check out'} • ${formatDateTime(lastRecord.ts)}`
+        : 'ยังไม่มีรายการ Check in/Check out วันนี้';
+      renderTodayAttendance(todayLogs);
+      healthAckLabel.textContent = currentAttendanceAction === 'IN'
+        ? 'รับทราบและยืนยันว่าพร้อมเข้างาน'
+        : 'รับทราบและยืนยันว่าพร้อมเลิกงาน';
+      plantSelectLabel.textContent = currentAttendanceAction === 'IN'
+        ? 'เลือกโรงงานในรัศมีที่กำหนดเพื่อ Check in'
+        : 'เลือกโรงงานในรัศมีที่กำหนดเพื่อ Check out';
+      checkinModal.classList.add('open');
+      checkinModal.setAttribute('aria-hidden', 'false');
+      healthAck.checked = false;
+      selfieCaptured = false;
+      document.querySelectorAll('input[name="nearPlant"]').forEach(item => { item.checked = false; });
+      selfiePreview.style.display = 'none';
+      selfieVideo.style.display = 'block';
+      showCheckinStep(0);
+    }
+
+    function closeCheckinFlow() {
+      stopCamera();
+      checkinModal.classList.remove('open');
+      checkinModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function renderInspectStep() {
+      const shot = inspectShots[inspectIndex];
+      inspectStepTag.textContent = `รูปที่ ${inspectIndex + 1}/${inspectShots.length}`;
+      inspectShotTitle.textContent = shot.title;
+      inspectGuideText.textContent = shot.guide;
+      inspectAiResult.style.display = 'none';
+      inspectAiResult.textContent = '';
+      inspectAiResult.className = 'warn-box';
+      inspectRetakeBtn.style.display = 'none';
+      inspectCannotRetakeBtn.style.display = 'none';
+      inspectNextBtn.style.display = 'none';
+      inspectCaptureBtn.style.display = 'inline-flex';
+      inspectCaptureBtn.textContent = 'ถ่ายภาพ';
+      inspectCaptured = false;
+      inspectPreview.style.display = 'none';
+      inspectVideo.style.display = 'block';
+    }
+
+    async function openInspectModal() {
+      inspectModal.classList.add('open');
+      inspectModal.setAttribute('aria-hidden', 'false');
+      inspectIndex = 0;
+      inspectRecords = [];
+      renderInspectStep();
+      await startInspectCamera();
+    }
+
+    function closeInspectFlow() {
+      stopInspectCamera();
+      inspectModal.classList.remove('open');
+      inspectModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function saveInspectResult(status, payload) {
+      const logs = loadInspectLogs();
+      logs.push({
+        dayKey: getDayKey(new Date()),
+        status,
+        ts: new Date().toISOString(),
+        payload
+      });
+      saveInspectLogs(logs);
+      refreshMenuStatus();
+    }
+
+    menuCheckin.addEventListener('click', openCheckinModal);
+    menuCheckin.addEventListener('click', collapseSidebar);
+    closeCheckinModal.addEventListener('click', closeCheckinFlow);
+    menuInspect.addEventListener('click', () => {
+      if (!canAccessMenu(2)) {
+        showMenuLockReason(2);
+        return;
+      }
+      collapseSidebar();
+      openInspectModal();
+    });
+    closeInspectModal.addEventListener('click', closeInspectFlow);
+    menuReady.addEventListener('click', () => {
+      if (!canAccessMenu(3)) {
+        showMenuLockReason(3);
+        return;
+      }
+      collapseSidebar();
+      switchMainPanel('ready');
+    });
+    menuDp.addEventListener('click', () => {
+      if (!canAccessMenu(4)) {
+        showMenuLockReason(4);
+        return;
+      }
+      collapseSidebar();
+      switchMainPanel('dp');
+      if (!selectedDpOrder) dpDetail.classList.remove('active');
+    });
+    menuTrip.addEventListener('click', () => {
+      if (!canAccessMenu(5)) {
+        showMenuLockReason(5);
+        return;
+      }
+      collapseSidebar();
+      alert('Mockup: เมนูรายงานเที่ยว/คิวของคุณ');
+    });
+    menuTraining.addEventListener('click', () => {
+      if (!canAccessMenu(7)) {
+        showMenuLockReason(7);
+        return;
+      }
+      collapseSidebar();
+      alert('Mockup: เมนู Training');
+    });
+    menuDriving.addEventListener('click', () => {
+      if (!canAccessMenu(8)) {
+        showMenuLockReason(8);
+        return;
+      }
+      collapseSidebar();
+      alert('Mockup: เมนูรายงานพฤติกรรมการขับขี่');
+    });
+
+    readyRefreshBtn.addEventListener('click', () => {
+      readyQueueStamp += Math.floor(Math.random() * 8) + 1;
+      readyQueueRows.forEach(item => {
+        const delta = Math.floor(Math.random() * 5) - 2;
+        item.waitMin = Math.max(1, item.waitMin + delta);
+      });
+      updateReadyRefreshLabel();
+      renderReadyTables();
+    });
+
+    readyConfirmBtn.addEventListener('click', () => {
+      const lat = 13.744 + Math.random() * 0.01;
+      const lng = 100.538 + Math.random() * 0.01;
+      readyCheckedInRecord = {
+        plantId: readySelectedPlantId,
+        ts: new Date().toISOString(),
+        lat: lat.toFixed(4),
+        lng: lng.toFixed(4)
+      };
+      readyStatusText.style.display = 'block';
+      readyStatusText.textContent =
+        `ลงวินสำเร็จ: ${readyDriver.truckNo} · ${readyDriver.name} · พร้อมรับคอนกรีต @ ${getPlantLabelById(readySelectedPlantId)} (${readyCheckedInRecord.lat}, ${readyCheckedInRecord.lng})`;
+      renderReadyTables();
+    });
+
+    checkinSecondaryBtn.addEventListener('click', () => {
+      if (checkinStepIndex === 3) {
+        stopCamera();
+      }
+      showCheckinStep(Math.max(0, checkinStepIndex - 1));
+      if (checkinStepIndex === 2 && !cameraStream) startCamera();
+    });
+
+    checkinPrimaryBtn.addEventListener('click', async () => {
+      if (checkinStepIndex === 0) {
+        if (currentAttendanceAction === 'OUT') {
+          const todayLogs = getTodayAttendanceLogs();
+          const selectedPlant = getLatestCheckedInPlant(todayLogs);
+          const logs = loadAttendanceLogs();
+          const nowIso = new Date().toISOString();
+          logs.push({
+            dayKey: getDayKey(new Date()),
+            type: 'OUT',
+            ts: nowIso,
+            plant: selectedPlant
+          });
+          saveAttendanceLogs(logs);
+          refreshMenuStatus();
+          checkinResultTitle.textContent = 'บันทึกการเลิกงานสำเร็จแล้ว';
+          checkinSuccessText.textContent = `บันทึกการเลิกงานสำเร็จ โรงงาน: ${selectedPlant}`;
+          const logItem = document.createElement('div');
+          logItem.className = 'history-item';
+          logItem.textContent = `${new Date(nowIso).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} · Check out · ${selectedPlant}`;
+          history.prepend(logItem);
+          showCheckinStep(4);
+          return;
+        }
+        showCheckinStep(1);
+        return;
+      }
+
+      if (checkinStepIndex === 1) {
+        if (!healthAck.checked) {
+          alert('กรุณากดรับทราบก่อน');
+          return;
+        }
+        showCheckinStep(2);
+        await startCamera();
+        return;
+      }
+
+      if (checkinStepIndex === 2) {
+        if (!selfieCaptured) {
+          if (!cameraStream) {
+            alert('กล้องยังไม่พร้อมใช้งาน');
+            return;
+          }
+          const width = selfieVideo.videoWidth || 720;
+          const height = selfieVideo.videoHeight || 960;
+          selfieCanvas.width = width;
+          selfieCanvas.height = height;
+          const ctx = selfieCanvas.getContext('2d');
+          ctx.drawImage(selfieVideo, 0, 0, width, height);
+          selfiePreview.src = selfieCanvas.toDataURL('image/jpeg', 0.92);
+          selfiePreview.style.display = 'block';
+          selfieVideo.style.display = 'none';
+          selfieCaptured = true;
+          checkinPrimaryBtn.textContent = 'ไปขั้นตอนถัดไป';
+          return;
+        }
+        stopCamera();
+        showCheckinStep(3);
+        return;
+      }
+
+      if (checkinStepIndex === 3) {
+        const selectedPlant = document.querySelector('input[name="nearPlant"]:checked');
+        if (!selectedPlant) {
+          alert(`กรุณาเลือกโรงงานสำหรับ ${currentAttendanceAction === 'IN' ? 'Check in' : 'Check out'}`);
+          return;
+        }
+        const logs = loadAttendanceLogs();
+        const nowIso = new Date().toISOString();
+        logs.push({
+          dayKey: getDayKey(new Date()),
+          type: currentAttendanceAction,
+          ts: nowIso,
+          plant: selectedPlant.value
+        });
+        saveAttendanceLogs(logs);
+        refreshMenuStatus();
+        checkinResultTitle.textContent = currentAttendanceAction === 'IN'
+          ? 'บันทึกการเข้างานสำเร็จแล้ว'
+          : 'บันทึกการเลิกงานสำเร็จแล้ว';
+        checkinSuccessText.textContent = currentAttendanceAction === 'IN'
+          ? `บันทึกการเข้างานสำเร็จ โรงงาน: ${selectedPlant.value}`
+          : `บันทึกการเลิกงานสำเร็จ โรงงาน: ${selectedPlant.value}`;
+        const logItem = document.createElement('div');
+        logItem.className = 'history-item';
+        logItem.textContent = `${new Date(nowIso).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} · ${currentAttendanceAction === 'IN' ? 'Check in' : 'Check out'} · ${selectedPlant.value}`;
+        history.prepend(logItem);
+        showCheckinStep(4);
+        return;
+      }
+
+      closeCheckinFlow();
+    });
+
+    checkinModal.addEventListener('click', (event) => {
+      if (event.target === checkinModal) closeCheckinFlow();
+    });
+
+    inspectCaptureBtn.addEventListener('click', () => {
+      if (!inspectStream) {
+        alert('กล้องยังไม่พร้อมใช้งาน');
+        return;
+      }
+      const width = inspectVideo.videoWidth || 720;
+      const height = inspectVideo.videoHeight || 960;
+      inspectCanvas.width = width;
+      inspectCanvas.height = height;
+      const ctx = inspectCanvas.getContext('2d');
+      ctx.drawImage(inspectVideo, 0, 0, width, height);
+      inspectPreview.src = inspectCanvas.toDataURL('image/jpeg', 0.92);
+      inspectPreview.style.display = 'block';
+      inspectVideo.style.display = 'none';
+      inspectCaptured = true;
+
+      const aiPass = Math.random() > 0.25;
+      inspectAiResult.style.display = 'block';
+      if (aiPass) {
+        inspectAiResult.className = 'result-pass';
+        inspectAiResult.textContent = `AI ประเมิน: ผ่านเกณฑ์ Safety (${inspectShots[inspectIndex].title})`;
+        inspectRecords.push({ shot: inspectShots[inspectIndex].key, pass: true, ts: new Date().toISOString() });
+        inspectNextBtn.style.display = 'inline-flex';
+        inspectRetakeBtn.style.display = 'none';
+        inspectCannotRetakeBtn.style.display = 'none';
+      } else {
+        inspectAiResult.className = 'result-fail';
+        inspectAiResult.textContent = `AI ประเมิน: ไม่ผ่านเกณฑ์ Safety (${inspectShots[inspectIndex].title})`;
+        inspectRecords.push({ shot: inspectShots[inspectIndex].key, pass: false, ts: new Date().toISOString() });
+        inspectRetakeBtn.style.display = 'inline-flex';
+        inspectCannotRetakeBtn.style.display = 'inline-flex';
+        inspectNextBtn.style.display = 'none';
+      }
+      inspectCaptureBtn.style.display = 'none';
+    });
+
+    inspectRetakeBtn.addEventListener('click', () => {
+      inspectRecords = inspectRecords.filter(item => item.shot !== inspectShots[inspectIndex].key);
+      inspectPreview.style.display = 'none';
+      inspectVideo.style.display = 'block';
+      inspectAiResult.style.display = 'none';
+      inspectRetakeBtn.style.display = 'none';
+      inspectCannotRetakeBtn.style.display = 'none';
+      inspectCaptureBtn.style.display = 'inline-flex';
+    });
+
+    inspectCannotRetakeBtn.addEventListener('click', () => {
+      saveInspectResult('fail', { reason: 'cannot-retake', shot: inspectShots[inspectIndex].key, records: inspectRecords });
+      closeInspectFlow();
+      alert('ตรวจรถไม่ผ่านและไม่สามารถถ่ายใหม่ได้: ไม่สามารถทำงานในวันนั้น');
+    });
+
+    inspectNextBtn.addEventListener('click', () => {
+      if (inspectIndex < inspectShots.length - 1) {
+        inspectIndex += 1;
+        renderInspectStep();
+        return;
+      }
+      saveInspectResult('pass', { records: inspectRecords });
+      closeInspectFlow();
+      alert('ตรวจรถครบ 5 รูป และผ่านเกณฑ์ Safety');
+    });
+
+    inspectModal.addEventListener('click', (event) => {
+      if (event.target === inspectModal) closeInspectFlow();
+    });
+
+    closeDpScanModal.addEventListener('click', closeDpScanFlow);
+    dpScanModal.addEventListener('click', (event) => {
+      if (event.target === dpScanModal) closeDpScanFlow();
+    });
+
+    dpScanCaptureBtn.addEventListener('click', () => {
+      if (!selectedDpOrder) return;
+      if (!dpScanStream) {
+        alert('กล้องยังไม่พร้อมใช้งาน');
+        return;
+      }
+      const width = dpScanVideo.videoWidth || 720;
+      const height = dpScanVideo.videoHeight || 960;
+      dpScanCanvas.width = width;
+      dpScanCanvas.height = height;
+      const ctx = dpScanCanvas.getContext('2d');
+      ctx.drawImage(dpScanVideo, 0, 0, width, height);
+      dpScanPreview.src = dpScanCanvas.toDataURL('image/jpeg', 0.92);
+      dpScanPreview.style.display = 'block';
+      dpScanVideo.style.display = 'none';
+      dpFaceCaptured = true;
+      stopDpScanCamera();
+      dpScanStepTag.textContent = 'AI ประมวลผลสำเร็จ';
+      dpScanResult.style.display = 'block';
+      dpScanResult.textContent = `AI ยืนยันผ่าน: ${selectedDpOrder.id} และพนักงาน ${readyDriver.name} ตรงกัน (Match 98.8%)`;
+      dpScanCaptureBtn.style.display = 'none';
+      dpScanOpenBtn.style.display = 'inline-flex';
+    });
+
+    dpScanOpenBtn.addEventListener('click', () => {
+      if (!selectedDpOrder || !dpFaceCaptured) return;
+      closeDpScanFlow();
+      switchMainPanel('dp');
+      renderDpList();
+      renderDpDetail(selectedDpOrder);
+      dpDetail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
 
     function checkAck() {
       const allChecked = acks.every(cb => cb.checked);
@@ -243,3 +1954,4 @@
   </script>
 </body>
 </html>
+
