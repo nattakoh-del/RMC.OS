@@ -69,10 +69,10 @@
     .hidden { display:none !important; }
     .main-menu { display:grid; gap:8px; grid-template-columns:repeat(3, 1fr); }
     .menu-btn {
-      border:1px solid var(--line); border-radius:12px; padding:10px 8px; font-size:12px; font-weight:600; background:#fff; cursor:pointer;
+      border:1px solid var(--line); border-radius:12px; padding:5px 6px; font-size:11px; font-weight:600; background:#fff; cursor:pointer;
     }
-    .menu-btn .ico { display:block; margin:0 auto 4px; width:16px; height:16px; }
-    .menu-btn .ico svg { width:16px; height:16px; fill:currentColor; }
+    .menu-btn .ico { display:block; margin:0 auto 2px; width:13px; height:13px; }
+    .menu-btn .ico svg { width:13px; height:13px; fill:currentColor; }
     .menu-btn.active { border-color:var(--accent); color:var(--accent); background:#fff1f3; }
     .profile-grid { display:grid; gap:7px; font-size:13px; }
     .profile-grid strong { font-weight:600; }
@@ -105,11 +105,15 @@
       margin-top:8px; border:1px solid var(--line); border-radius:10px; padding:8px;
       background:#fafcff; display:grid; gap:8px;
     }
-    .flow-step { display:grid; grid-template-columns:14px 1fr auto; gap:8px; align-items:center; }
+    .flow-step { display:grid; grid-template-columns:14px 1fr auto auto; gap:8px; align-items:center; }
     .flow-dot { width:10px; height:10px; border-radius:50%; background:#c9d3de; margin-left:2px; }
     .flow-step.done .flow-dot { background:#0ea85f; }
     .flow-step .flow-name { font-size:12px; }
     .flow-step .flow-time { font-size:12px; color:var(--muted); font-weight:600; }
+    .flow-step .step-btn {
+      border:1px solid var(--line); background:#fff; border-radius:8px; padding:3px 8px; font-size:11px; font-family:inherit; cursor:pointer;
+    }
+    .flow-step.done .step-btn { border-color:#0ea85f; color:#0b7d45; }
     .logs { margin:0; padding-left:18px; display:grid; gap:4px; font-size:12px; }
     .chip { display:inline-block; border-radius:999px; padding:3px 8px; font-size:11px; font-weight:600; }
     .chip.ok { background:#e5f9ef; color:#0c8d4f; }
@@ -127,10 +131,17 @@
     .thumb {
       border:1px solid var(--line); border-radius:8px; padding:4px 8px; font-size:11px; background:#fff7f8;
     }
+    .thumb img { width:66px; height:66px; object-fit:cover; border-radius:6px; display:block; margin-bottom:4px; }
     .summary-grid { display:grid; gap:8px; grid-template-columns:1fr 1fr; }
     .kpi { border:1px solid var(--line); border-radius:10px; padding:10px; background:#fff; }
+    .kpi.clickable { cursor:pointer; }
+    .kpi.clickable:hover { border-color:var(--accent); }
     .kpi small { color:var(--muted); display:block; }
     .kpi strong { font-size:22px; }
+    .summary-detail { border:1px solid var(--line); border-radius:10px; padding:10px; background:#fff; font-size:12px; }
+    .summary-detail table { width:100%; border-collapse:collapse; }
+    .summary-detail th,.summary-detail td { border:1px solid var(--line); padding:6px 8px; text-align:left; }
+    .summary-detail th { background:#fff1f3; }
     .overlay {
       position:fixed; inset:0; background:rgba(10,20,35,0.5); display:flex; align-items:center; justify-content:center; padding:14px;
     }
@@ -191,7 +202,7 @@
         <div class="cpac-surface card">
           <div id="avatarBox" class="avatar">DR<span class="avatar-hint">แตะเพื่อถ่ายรูป</span></div>
           <input id="avatarInput" type="file" accept="image/*" capture="environment" class="hidden">
-          <div class="profile-grid">
+          <div class="profile-grid" style="margin-bottom:10px;">
             <div><strong>รหัสพนักงาน:</strong> DR-00027</div>
             <div><strong>ชื่อ นามสกุล:</strong> สมชาย ใจดี</div>
             <div><strong>รหัสรถ:</strong> TR-8401</div>
@@ -199,28 +210,20 @@
             <div><strong>สังกัดโรงงาน:</strong> โรงงานบางนา</div>
             <div><strong>สังกัดบริษัท:</strong> บจก. คอนกรีตซีแพค</div>
           </div>
-          <button id="profileCheckInBtn" class="btn ok" style="width:100%;margin-top:10px;">Check in เข้างาน</button>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <h3 style="margin:0;">สรุปผลการทำงาน (ข้อมูลส่วนตัว)</h3>
+            <input id="profileMonth" type="month" class="field" style="max-width:150px;padding:6px 8px;">
+          </div>
+          <div class="summary-grid" style="margin-top:8px;">
+            <div class="kpi"><small>จำนวนเที่ยวจัดส่งคอนกรีต</small><strong id="pSumTrips">0</strong> เที่ยว</div>
+            <div class="kpi"><small>สรุปรายได้</small><strong id="pSumIncome">0</strong> บาท</div>
+            <div class="kpi"><small>จำนวนวันทำงาน</small><strong id="pSumDays">0</strong> วัน</div>
+            <div class="kpi"><small>โรงงานที่ปฏิบัติงาน</small><strong id="pSumPlant" style="font-size:18px;">-</strong></div>
+          </div>
         </div>
       </section>
 
       <section id="page-daily" class="row-1 hidden">
-        <div class="cpac-surface card">
-          <h3 style="margin:0 0 8px;">งานประจำวัน</h3>
-          <div class="row">
-            <button id="toggleCheckBtn" class="btn ok">Check in</button>
-            <button id="planBtn" class="btn ghost" disabled>แผนงานประจำวัน</button>
-          </div>
-          <div style="margin-top:10px;">
-            <span class="chip warn">บันทึกเวลาเข้า-ออกงานทุกครั้ง</span>
-          </div>
-          <div style="margin-top:8px;">
-            <small style="color:var(--muted);">Time log activity วันนี้</small>
-            <ul id="timeLogList" class="logs">
-              <li>ยังไม่มีการ Check in / Check out</li>
-            </ul>
-          </div>
-        </div>
-
         <div id="planSection" class="cpac-surface card hidden">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <h3 style="margin:0;">แผนงานประจำวัน</h3>
@@ -234,17 +237,37 @@
           <div id="dpList" class="dp-list"></div>
           <div id="dpDetail" class="dp-detail-box hidden"></div>
         </div>
+
+        <div class="cpac-surface card">
+          <h3 style="margin:0 0 8px;">งานประจำวัน</h3>
+          <div class="row">
+            <button id="toggleCheckBtn" class="btn ok">Check in</button>
+          </div>
+          <div style="margin-top:10px;">
+            <span class="chip warn">บันทึกเวลาเข้า-ออกงานทุกครั้ง</span>
+          </div>
+          <div style="margin-top:8px;">
+            <small style="color:var(--muted);">Time log activity วันนี้</small>
+            <ul id="timeLogList" class="logs">
+              <li>ยังไม่มีการ Check in / Check out</li>
+            </ul>
+          </div>
+        </div>
       </section>
 
       <section id="page-summary" class="row-1 hidden">
         <div class="cpac-surface card">
-          <h3 style="margin:0 0 10px;">สรุปผลการทำงานรายเดือน</h3>
-          <div class="summary-grid">
-            <div class="kpi"><small>จำนวนเที่ยวจัดส่งคอนกรีต</small><strong id="sumTrips">0</strong> เที่ยว</div>
-            <div class="kpi"><small>สรุปรายได้</small><strong id="sumIncome">0</strong> บาท</div>
-            <div class="kpi"><small>จำนวนวันทำงาน</small><strong id="sumDays">0</strong> วัน</div>
-            <div class="kpi"><small>โรงงานล่าสุดที่ปฏิบัติงาน</small><strong id="sumPlant" style="font-size:18px;">-</strong></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;">
+            <h3 style="margin:0;">สรุปผลการทำงานรายเดือน</h3>
+            <input id="summaryMonth" type="month" class="field" style="max-width:150px;padding:6px 8px;">
           </div>
+          <div class="summary-grid">
+            <div class="kpi clickable" data-summary-type="trips"><small>จำนวนเที่ยวจัดส่งคอนกรีต</small><strong id="sumTrips">0</strong> เที่ยว</div>
+            <div class="kpi clickable" data-summary-type="income"><small>สรุปรายได้</small><strong id="sumIncome">0</strong> บาท</div>
+            <div class="kpi clickable" data-summary-type="days"><small>จำนวนวันทำงาน</small><strong id="sumDays">0</strong> วัน</div>
+            <div class="kpi clickable" data-summary-type="plants"><small>โรงงานที่ปฏิบัติงาน</small><strong id="sumPlant" style="font-size:18px;">-</strong></div>
+          </div>
+          <div id="summaryDetail" class="summary-detail" style="margin-top:8px;">กดที่หัวข้อเพื่อดูรายละเอียดรายวัน</div>
         </div>
       </section>
     </div>
@@ -319,6 +342,7 @@
       selectedDpId: null,
       activeDpId: null,
       photoTargetDpId: null,
+      photoMode: 'camera',
       dpJobs: [
         { id:'DP-20260227-001', deliveryDate:'27-02-2026', appt:'08:30', siteCode:'K00981', siteName:'โครงการรุ่งเรือง ทาวน์โฮม', unitCode:'U-2201', unitName:'หน่วยงานบางนา', contact:'คุณวิทยา 089-111-2345', product:'คอนกรีต 280 KSC', qty:'8.0', note:'เข้าหน้าไซต์ประตู 2', lat:13.667, lng:100.612, status:'pending', images:[], signed:false },
         { id:'DP-20260227-002', deliveryDate:'27-02-2026', appt:'10:15', siteCode:'K00844', siteName:'Site สุขุมวิท 103', unitCode:'U-2202', unitName:'หน่วยงานสุขุมวิท', contact:'คุณศิริกุล 081-443-9898', product:'คอนกรีต 240 KSC', qty:'6.0', note:'โทรแจ้งก่อนเข้าหน้างาน 20 นาที', lat:13.679, lng:100.625, status:'pending', images:[], signed:false },
@@ -329,7 +353,20 @@
         { name:'โรงงานศรีนครินทร์', km:7.6, company:'บจก. คอนกรีตซีแพค' },
         { name:'โรงงานเทพารักษ์', km:10.1, company:'บจก. คอนกรีตซีแพค' },
         { name:'โรงงานลาดกระบัง', km:16.4, company:'บจก. คอนกรีตซีแพค' }
-      ]
+      ],
+      monthlyData: {
+        '2026-02': {
+          trips: [{ date:'2026-02-01', value:3 }, { date:'2026-02-03', value:4 }, { date:'2026-02-08', value:5 }, { date:'2026-02-13', value:2 }, { date:'2026-02-19', value:4 }],
+          income: [{ date:'2026-02-01', value:2550 }, { date:'2026-02-03', value:3400 }, { date:'2026-02-08', value:4250 }, { date:'2026-02-13', value:1700 }, { date:'2026-02-19', value:3400 }],
+          attendance: [
+            { date:'2026-02-01', checkIn:'07:45', checkOut:'18:10', plant:'โรงงานบางนา' },
+            { date:'2026-02-03', checkIn:'07:38', checkOut:'18:24', plant:'โรงงานศรีนครินทร์' },
+            { date:'2026-02-08', checkIn:'07:56', checkOut:'17:58', plant:'โรงงานบางนา' },
+            { date:'2026-02-13', checkIn:'08:03', checkOut:'17:35', plant:'โรงงานเทพารักษ์' },
+            { date:'2026-02-19', checkIn:'07:42', checkOut:'18:05', plant:'โรงงานบางนา' }
+          ]
+        }
+      }
     };
 
     const loginView = document.getElementById('loginView');
@@ -343,9 +380,7 @@
       summary: document.getElementById('page-summary')
     };
 
-    const profileCheckInBtn = document.getElementById('profileCheckInBtn');
     const toggleCheckBtn = document.getElementById('toggleCheckBtn');
-    const planBtn = document.getElementById('planBtn');
     const planSection = document.getElementById('planSection');
     const dpListEl = document.getElementById('dpList');
     const dpDetailEl = document.getElementById('dpDetail');
@@ -355,6 +390,9 @@
     const showAllDpBtn = document.getElementById('showAllDpBtn');
     const avatarBox = document.getElementById('avatarBox');
     const avatarInput = document.getElementById('avatarInput');
+    const summaryMonth = document.getElementById('summaryMonth');
+    const profileMonth = document.getElementById('profileMonth');
+    const summaryDetail = document.getElementById('summaryDetail');
 
     const factoryModal = document.getElementById('factoryModal');
     const factoryModalTitle = document.getElementById('factoryModalTitle');
@@ -403,11 +441,8 @@
 
     function updateWorkStatus() {
       statusBadge.textContent = state.checkedIn ? `Check in แล้ว (${state.currentPlant})` : 'ยังไม่ Check in';
-      profileCheckInBtn.textContent = state.checkedIn ? 'Check out ออกงาน' : 'Check in เข้างาน';
-      profileCheckInBtn.className = `btn ${state.checkedIn ? 'warn' : 'ok'}`;
       toggleCheckBtn.textContent = state.checkedIn ? 'Check out' : 'Check in';
       toggleCheckBtn.className = `btn ${state.checkedIn ? 'warn' : 'ok'}`;
-      planBtn.disabled = !state.checkedIn;
     }
 
     function renderTimeLogs() {
@@ -483,7 +518,10 @@
       const rows = flowSteps.map(step => {
         const time = times[step.key] || '-';
         const doneClass = hasTime(time) ? 'done' : '';
-        return `<div class="flow-step ${doneClass}"><span class="flow-dot"></span><span class="flow-name">${step.label}</span><span class="flow-time">${time}</span></div>`;
+        const actionBtn = hasTime(time)
+          ? ''
+          : `<button class="step-btn" data-flow-step="${step.key}" data-flow-dp="${dp.id}">บันทึกเวลา</button>`;
+        return `<div class="flow-step ${doneClass}"><span class="flow-dot"></span><span class="flow-name">${step.label}</span><span class="flow-time">${time}</span>${actionBtn}</div>`;
       }).join('');
       return `<div class="flow">${rows}</div>`;
     }
@@ -494,7 +532,10 @@
       dpListEl.innerHTML = '';
       const sourceJobs = state.dpJobs
         .slice()
-        .sort((a, b) => a.appt.localeCompare(b.appt));
+        .sort((a, b) => {
+          if (a.signed !== b.signed) return a.signed ? 1 : -1; // completed jobs stay at the bottom
+          return a.appt.localeCompare(b.appt);
+        });
       const viewJobs = state.activeDpId ? sourceJobs.filter(x => x.id === state.activeDpId) : sourceJobs;
       dpToolbar.classList.toggle('hidden', !state.activeDpId);
       viewJobs.forEach(dp => {
@@ -549,20 +590,64 @@
         <button class="btn ok" style="width:100%;margin-top:8px;" ${dp.signed ? 'disabled' : ''} data-sign-dp="${dp.id}">
           ${dp.signed ? 'เซ็นต์รับ DP แล้ว' : 'เซ็นต์รับ DP'}
         </button>
-        <div class="thumbs">${dp.images.map(img => `<span class="thumb"><b>${img.name}</b>${img.note ? `<small>${img.note}</small>` : ''}</span>`).join('') || '<span class="thumb">ยังไม่มีภาพ</span>'}</div>
+        <div class="thumbs">${dp.images.map(img => `<span class="thumb">${img.url ? `<img src="${img.url}" alt="${img.name}">` : ''}<b>${img.name}</b>${img.note ? `<small>${img.note}</small>` : ''}</span>`).join('') || '<span class="thumb">ยังไม่มีภาพ</span>'}</div>
       `;
       renderDPList();
       renderSummary();
     }
 
+    function getMonthKey() {
+      const v = summaryMonth?.value || profileMonth?.value;
+      if (v) return v;
+      const now = new Date();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      return `${now.getFullYear()}-${m}`;
+    }
+    function getMonthData() {
+      const key = getMonthKey();
+      return state.monthlyData[key] || { trips: [], income: [], attendance: [] };
+    }
+    function renderProfileSummary() {
+      const data = getMonthData();
+      const tripTotal = data.trips.reduce((s, x) => s + x.value, 0);
+      const incomeTotal = data.income.reduce((s, x) => s + x.value, 0);
+      const workDays = data.attendance.length;
+      const plantList = [...new Set(data.attendance.map(x => x.plant))];
+      document.getElementById('pSumTrips').textContent = tripTotal;
+      document.getElementById('pSumIncome').textContent = incomeTotal.toLocaleString('th-TH');
+      document.getElementById('pSumDays').textContent = workDays;
+      document.getElementById('pSumPlant').textContent = plantList.length ? plantList.join(', ') : '-';
+    }
+    function renderSummaryDetail(type) {
+      const data = getMonthData();
+      if (type === 'trips') {
+        const rows = data.trips.map(x => `<tr><td>${x.date}</td><td>${x.value}</td></tr>`).join('');
+        summaryDetail.innerHTML = `<strong>เที่ยวจัดส่งคอนกรีตรายวัน</strong><table><thead><tr><th>วันที่</th><th>จำนวนเที่ยว</th></tr></thead><tbody>${rows || '<tr><td colspan="2">ไม่มีข้อมูล</td></tr>'}</tbody></table>`;
+      } else if (type === 'income') {
+        const rows = data.income.map(x => `<tr><td>${x.date}</td><td>${x.value.toLocaleString('th-TH')}</td></tr>`).join('');
+        summaryDetail.innerHTML = `<strong>รายได้รายวัน</strong><table><thead><tr><th>วันที่</th><th>รายได้ (บาท)</th></tr></thead><tbody>${rows || '<tr><td colspan="2">ไม่มีข้อมูล</td></tr>'}</tbody></table>`;
+      } else if (type === 'days') {
+        const rows = data.attendance.map(x => `<tr><td>${x.date}</td><td>${x.checkIn}</td><td>${x.checkOut}</td></tr>`).join('');
+        summaryDetail.innerHTML = `<strong>วันทำงาน และเวลา Check in / Check out</strong><table><thead><tr><th>วันที่</th><th>Check in</th><th>Check out</th></tr></thead><tbody>${rows || '<tr><td colspan="3">ไม่มีข้อมูล</td></tr>'}</tbody></table>`;
+      } else if (type === 'plants') {
+        const rows = data.attendance.map(x => `<tr><td>${x.date}</td><td>${x.plant}</td></tr>`).join('');
+        summaryDetail.innerHTML = `<strong>โรงงานที่ Check in รายวัน</strong><table><thead><tr><th>วันที่</th><th>โรงงาน</th></tr></thead><tbody>${rows || '<tr><td colspan="2">ไม่มีข้อมูล</td></tr>'}</tbody></table>`;
+      }
+    }
     function renderSummary() {
-      const doneTrips = state.dpJobs.filter(d => d.signed).length;
-      const workDays = [...new Set(state.timeLogs.filter(l => l.type === 'Check in').map(l => l.date))].length;
-      const income = doneTrips * 850;
-      document.getElementById('sumTrips').textContent = doneTrips;
-      document.getElementById('sumIncome').textContent = income.toLocaleString('th-TH');
+      const data = getMonthData();
+      const tripTotal = data.trips.reduce((s, x) => s + x.value, 0);
+      const incomeTotal = data.income.reduce((s, x) => s + x.value, 0);
+      const workDays = data.attendance.length;
+      const plantList = [...new Set(data.attendance.map(x => x.plant))];
+      document.getElementById('sumTrips').textContent = tripTotal;
+      document.getElementById('sumIncome').textContent = incomeTotal.toLocaleString('th-TH');
       document.getElementById('sumDays').textContent = workDays;
-      document.getElementById('sumPlant').textContent = state.currentPlant || '-';
+      document.getElementById('sumPlant').textContent = plantList.length ? plantList.join(', ') : '-';
+      renderProfileSummary();
+      const activeType = summaryDetail.dataset.activeType || 'trips';
+      summaryDetail.dataset.activeType = activeType;
+      renderSummaryDetail(activeType);
     }
 
     loginBtn.addEventListener('click', () => {
@@ -574,6 +659,8 @@
       updateWorkStatus();
       renderTimeLogs();
       renderDPList();
+      if (summaryMonth && !summaryMonth.value) summaryMonth.value = '2026-02';
+      if (profileMonth && !profileMonth.value) profileMonth.value = summaryMonth.value;
       renderSummary();
     });
 
@@ -595,14 +682,7 @@
       }
     }
 
-    profileCheckInBtn.addEventListener('click', handleCheckInOut);
     toggleCheckBtn.addEventListener('click', handleCheckInOut);
-
-    planBtn.addEventListener('click', () => {
-      if (!state.checkedIn) return;
-      planSection.classList.remove('hidden');
-      renderDPList();
-    });
 
     saveFactoryBtn.addEventListener('click', () => {
       const selected = document.querySelector('input[name="factory"]:checked');
@@ -615,6 +695,9 @@
         pushTimeLog('Check in', state.currentPlant);
         showSuccess('Check in สำเร็จ', state.currentPlant);
         updateWorkStatus();
+        showPage('daily');
+        planSection.classList.remove('hidden');
+        renderDPList();
         renderSummary();
       }
     });
@@ -629,6 +712,17 @@
     });
 
     dpDetailEl.addEventListener('click', (e) => {
+      const flowBtn = e.target.closest('[data-flow-step]');
+      if (flowBtn) {
+        const dp = state.dpJobs.find(x => x.id === flowBtn.dataset.flowDp);
+        if (!dp) return;
+        if (!dp.flowTimes) dp.flowTimes = getDefaultFlowTimes(dp.id);
+        const stepKey = flowBtn.dataset.flowStep;
+        if (hasTime(dp.flowTimes[stepKey])) return;
+        dp.flowTimes[stepKey] = toHm(new Date());
+        renderDPDetail(dp.id);
+        return;
+      }
       const photoBtn = e.target.closest('[data-photo-dp]');
       if (photoBtn) {
         state.photoTargetDpId = photoBtn.dataset.photoDp;
@@ -694,10 +788,11 @@
       if (!hasTime(dp.flowTimes.arrivePlant)) dp.flowTimes.arrivePlant = toHm(new Date(now.getTime() + 35 * 60000));
       state.activeDpId = null;
       signModal.classList.add('hidden');
-      renderDPDetail(dp.id);
+      dpDetailEl.classList.add('hidden');
+      showPage('daily');
+      planSection.classList.remove('hidden');
       renderDPList();
       renderSummary();
-      alert(`เซ็นต์รับ ${dp.id} สำเร็จ และถือว่าเสร็จสิ้นการจัดส่งแล้ว`);
     });
 
     closeSignBtn.addEventListener('click', () => signModal.classList.add('hidden'));
@@ -719,12 +814,14 @@
     function closePhotoModal() { photoModal.classList.add('hidden'); }
     function setPhotoMode(mode){
       const useCamera = mode === 'camera';
+      state.photoMode = mode;
       modeCameraBtn.classList.toggle('active', useCamera);
       modeAlbumBtn.classList.toggle('active', !useCamera);
       cameraWrap.classList.toggle('hidden', !useCamera);
       albumWrap.classList.toggle('hidden', useCamera);
       if (useCamera) albumInput.value = '';
       if (!useCamera) captureInput.value = '';
+      if (useCamera) setTimeout(() => captureInput.click(), 0);
     }
     modeCameraBtn.addEventListener('click', () => setPhotoMode('camera'));
     modeAlbumBtn.addEventListener('click', () => setPhotoMode('album'));
@@ -733,16 +830,34 @@
       const dp = state.dpJobs.find(x => x.id === state.photoTargetDpId);
       if (!dp) return closePhotoModal();
       const note = photoNote.value.trim();
-      const captured = Array.from(captureInput.files || []);
-      const album = Array.from(albumInput.files || []);
-      const files = captured.concat(album);
+      const files = state.photoMode === 'camera'
+        ? Array.from(captureInput.files || [])
+        : Array.from(albumInput.files || []);
       if (files.length === 0) return alert('กรุณาเลือกรูปอย่างน้อย 1 รูป');
-      files.forEach(file => dp.images.push({ name: file.name, note }));
+      files.forEach(file => dp.images.push({ name: file.name, note, url: URL.createObjectURL(file) }));
       closePhotoModal();
       renderDPDetail(dp.id);
+    });
+
+    document.querySelectorAll('[data-summary-type]').forEach(el => {
+      el.addEventListener('click', () => {
+        summaryDetail.dataset.activeType = el.dataset.summaryType;
+        renderSummaryDetail(el.dataset.summaryType);
+      });
+    });
+    summaryMonth?.addEventListener('change', () => {
+      profileMonth.value = summaryMonth.value;
+      summaryDetail.dataset.activeType = '';
+      renderSummary();
+    });
+    profileMonth?.addEventListener('change', () => {
+      summaryMonth.value = profileMonth.value;
+      summaryDetail.dataset.activeType = '';
+      renderSummary();
     });
   </script>
 </body>
 </html>
+
 
 
