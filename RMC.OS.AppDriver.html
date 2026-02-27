@@ -1,0 +1,748 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RMC.OS Driver App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="CPACTheme.css">
+  <style>
+    :root { --accent:#d0021b; --ok:#0ea85f; --warn:#c98500; --err:#d1334a; }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      background:linear-gradient(180deg, #fff4f5 0%, #fffdfd 100%);
+      font-family:'Prompt','Space Grotesk',sans-serif;
+      color:var(--text);
+      display:flex;
+      justify-content:center;
+      padding:16px 10px;
+    }
+    .phone {
+      width:min(100%, 430px);
+      min-height:92vh;
+      border:1px solid var(--line);
+      border-radius:24px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow:0 24px 44px rgba(208,2,27,0.18);
+      display:flex;
+      flex-direction:column;
+    }
+    .topbar {
+      padding:8px 12px;
+      background:linear-gradient(135deg, #d0021b, #9b0f0f);
+      color:#fff;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
+    .title { font-weight:700; font-size:14px; margin:0; line-height:1.1; }
+    .subtitle { margin:1px 0 0; font-size:10px; opacity:0.9; line-height:1.1; }
+    .status-badge { border:1px solid rgba(255,255,255,0.55); border-radius:999px; padding:3px 8px; font-size:10px; font-weight:600; }
+    .topbar-actions { display:flex; gap:6px; }
+    .icon-btn {
+      width:26px; height:26px; border-radius:50%; border:1px solid rgba(255,255,255,0.5);
+      display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.15);
+      padding:0;
+    }
+    .icon-btn svg { width:13px; height:13px; fill:#fff; }
+    .content { padding:12px; display:grid; gap:10px; flex:1; overflow:auto; }
+    .cpac-surface { border-radius:14px; }
+    .card { padding:12px; }
+    .label { display:block; font-size:12px; color:var(--muted); margin-bottom:4px; }
+    .field, .select {
+      width:100%; border:1px solid var(--line); border-radius:10px; padding:10px; font-family:inherit;
+      font-size:14px; outline:none;
+    }
+    .btn {
+      border:none; border-radius:10px; padding:10px 12px; font-weight:600; cursor:pointer; font-family:inherit;
+    }
+    .btn.primary { background:var(--accent); color:#fff; }
+    .btn.ghost { background:#fff; border:1px solid var(--line); color:var(--text); }
+    .btn.ok { background:var(--ok); color:#fff; }
+    .btn.warn { background:var(--warn); color:#fff; }
+    .btn:disabled { opacity:0.45; cursor:not-allowed; }
+    .row { display:grid; gap:8px; grid-template-columns:1fr 1fr; }
+    .row-1 { display:grid; gap:8px; }
+    .hidden { display:none !important; }
+    .main-menu { display:grid; gap:8px; grid-template-columns:repeat(3, 1fr); }
+    .menu-btn {
+      border:1px solid var(--line); border-radius:12px; padding:10px 8px; font-size:12px; font-weight:600; background:#fff; cursor:pointer;
+    }
+    .menu-btn .ico { display:block; margin:0 auto 4px; width:16px; height:16px; }
+    .menu-btn .ico svg { width:16px; height:16px; fill:currentColor; }
+    .menu-btn.active { border-color:var(--accent); color:var(--accent); background:#fff1f3; }
+    .profile-grid { display:grid; gap:7px; font-size:13px; }
+    .profile-grid strong { font-weight:600; }
+    .avatar {
+      width:86px; height:86px; border-radius:50%; margin:0 auto 8px; background:linear-gradient(140deg,#ffe5e9,#ffd1d8);
+      display:flex; align-items:center; justify-content:center; font-weight:700; color:#9b0f0f;
+      cursor:pointer; position:relative; overflow:hidden; background-size:cover; background-position:center;
+    }
+    .avatar .avatar-hint{
+      position:absolute; bottom:0; left:0; right:0; text-align:center; font-size:10px; color:#fff;
+      background:linear-gradient(180deg, transparent, rgba(0,0,0,0.45)); padding:10px 4px 4px;
+    }
+    .avatar.has-photo { color:transparent; }
+    .avatar.has-photo .avatar-hint { display:block; }
+    .dp-toolbar { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
+    .dp-toolbar .btn { padding:7px 10px; font-size:12px; }
+    .dp-card.current { border-color:var(--accent); box-shadow:0 0 0 2px rgba(208,2,27,0.15) inset; }
+    .dp-detail-box { margin-top:8px; border-top:1px dashed var(--line); padding-top:10px; }
+    .photo-note { width:100%; min-height:68px; resize:vertical; border:1px solid var(--line); border-radius:10px; padding:8px; font-family:inherit; }
+    .muted-line { color:var(--muted); font-size:12px; margin:0; }
+    .thumb small { display:block; color:var(--muted); font-size:10px; margin-top:2px; }
+    .thumb b { font-size:11px; }
+    .camera-inputs { display:grid; gap:8px; }
+    .camera-inputs label { display:block; font-size:12px; color:var(--muted); margin-bottom:4px; }
+    .camera-inputs input[type="file"] { width:100%; font-family:inherit; font-size:12px; }
+    .mode-toggle { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .mode-toggle button { padding:8px 10px; border-radius:10px; border:1px solid var(--line); background:#fff; font-weight:600; font-family:inherit; }
+    .mode-toggle button.active { border-color:var(--accent); background:#fff1f3; color:var(--accent); }
+    .flow {
+      margin-top:8px; border:1px solid var(--line); border-radius:10px; padding:8px;
+      background:#fafcff; display:grid; gap:8px;
+    }
+    .flow-step { display:grid; grid-template-columns:14px 1fr auto; gap:8px; align-items:center; }
+    .flow-dot { width:10px; height:10px; border-radius:50%; background:#c9d3de; margin-left:2px; }
+    .flow-step.done .flow-dot { background:#0ea85f; }
+    .flow-step .flow-name { font-size:12px; }
+    .flow-step .flow-time { font-size:12px; color:var(--muted); font-weight:600; }
+    .logs { margin:0; padding-left:18px; display:grid; gap:4px; font-size:12px; }
+    .chip { display:inline-block; border-radius:999px; padding:3px 8px; font-size:11px; font-weight:600; }
+    .chip.ok { background:#e5f9ef; color:#0c8d4f; }
+    .chip.warn { background:#fff4dd; color:#8a5c00; }
+    .dp-list { display:grid; gap:8px; }
+    .dp-card { border:1px solid var(--line); border-radius:12px; padding:10px; background:#fff; }
+    .dp-meta { font-size:12px; color:var(--muted); }
+    .dp-status { font-size:11px; font-weight:700; border-radius:999px; padding:3px 8px; }
+    .dp-status.pending { color:#8a5c00; background:#fff4dd; }
+    .dp-status.working { color:#9b0f0f; background:#fff0f2; }
+    .dp-status.done { color:#0b7d45; background:#e7f9ee; }
+    .detail-grid { display:grid; gap:6px; font-size:13px; }
+    .detail-grid strong { font-weight:600; }
+    .thumbs { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+    .thumb {
+      border:1px solid var(--line); border-radius:8px; padding:4px 8px; font-size:11px; background:#fff7f8;
+    }
+    .summary-grid { display:grid; gap:8px; grid-template-columns:1fr 1fr; }
+    .kpi { border:1px solid var(--line); border-radius:10px; padding:10px; background:#fff; }
+    .kpi small { color:var(--muted); display:block; }
+    .kpi strong { font-size:22px; }
+    .overlay {
+      position:fixed; inset:0; background:rgba(10,20,35,0.5); display:flex; align-items:center; justify-content:center; padding:14px;
+    }
+    .modal {
+      width:min(100%, 420px); background:#fff; border-radius:14px; border:1px solid var(--line); padding:12px;
+      display:grid; gap:10px;
+    }
+    .factory-list { display:grid; gap:7px; max-height:220px; overflow:auto; }
+    .factory-item { border:1px solid var(--line); border-radius:10px; padding:8px; display:flex; gap:8px; align-items:flex-start; }
+    .factory-item b { color:#9b0f0f; }
+    canvas { width:100%; height:170px; border:1px dashed var(--line); border-radius:10px; touch-action:none; }
+    @media (max-width: 380px) {
+      .main-menu { grid-template-columns:1fr; }
+      .summary-grid { grid-template-columns:1fr; }
+      .row { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="topbar">
+      <div>
+        <p class="title">RMC.OS Driver</p>
+        <p class="subtitle">ระบบพนักงานขับรถโม่คอนกรีต</p>
+      </div>
+      <div style="display:grid;gap:4px;justify-items:end;">
+        <span id="workStatus" class="status-badge">ยังไม่ Check in</span>
+        <div class="topbar-actions">
+          <button class="icon-btn" type="button" aria-label="แจ้งเตือน">
+            <svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-5V11a7 7 0 1 0-14 0v6L3 19v1h18v-1l-2-2Z"/></svg>
+          </button>
+          <button class="icon-btn" type="button" aria-label="โปรไฟล์">
+            <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5Z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="loginView" class="content">
+      <div class="cpac-surface card">
+        <h3 style="margin:0 0 8px;">เข้าสู่ระบบ</h3>
+        <label class="label">User (รหัสบัตรประชาชน)</label>
+        <input id="username" class="field" maxlength="13" placeholder="13 หลัก">
+        <label class="label" style="margin-top:8px;">Password</label>
+        <input id="password" class="field" type="password" placeholder="กรอกรหัสผ่าน">
+        <button id="loginBtn" class="btn primary" style="width:100%;margin-top:12px;">เข้าใช้งาน App</button>
+      </div>
+    </div>
+
+    <div id="appView" class="content hidden">
+      <div class="main-menu">
+        <button class="menu-btn active" data-page="profile"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5Z"/></svg></span>ข้อมูลส่วนตัว</button>
+        <button class="menu-btn" data-page="daily"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 0 0-2 2v3h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7Zm14 9H3v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-9ZM7 14h4v4H7v-4Z"/></svg></span>งานประจำวัน</button>
+        <button class="menu-btn" data-page="summary"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 20h16v2H2V4h2v16Zm2-2V9h3v9H6Zm5 0V5h3v13h-3Zm5 0v-7h3v7h-3Z"/></svg></span>สรุปผลการทำงาน</button>
+      </div>
+
+      <section id="page-profile" class="row-1">
+        <div class="cpac-surface card">
+          <div id="avatarBox" class="avatar">DR<span class="avatar-hint">แตะเพื่อถ่ายรูป</span></div>
+          <input id="avatarInput" type="file" accept="image/*" capture="environment" class="hidden">
+          <div class="profile-grid">
+            <div><strong>รหัสพนักงาน:</strong> DR-00027</div>
+            <div><strong>ชื่อ นามสกุล:</strong> สมชาย ใจดี</div>
+            <div><strong>รหัสรถ:</strong> TR-8401</div>
+            <div><strong>เลขทะเบียนรถ:</strong> 71-2840 กรุงเทพมหานคร</div>
+            <div><strong>สังกัดโรงงาน:</strong> โรงงานบางนา</div>
+            <div><strong>สังกัดบริษัท:</strong> บจก. คอนกรีตซีแพค</div>
+          </div>
+          <button id="profileCheckInBtn" class="btn ok" style="width:100%;margin-top:10px;">Check in เข้างาน</button>
+        </div>
+      </section>
+
+      <section id="page-daily" class="row-1 hidden">
+        <div class="cpac-surface card">
+          <h3 style="margin:0 0 8px;">งานประจำวัน</h3>
+          <div class="row">
+            <button id="toggleCheckBtn" class="btn ok">Check in</button>
+            <button id="planBtn" class="btn ghost" disabled>แผนงานประจำวัน</button>
+          </div>
+          <div style="margin-top:10px;">
+            <span class="chip warn">บันทึกเวลาเข้า-ออกงานทุกครั้ง</span>
+          </div>
+          <div style="margin-top:8px;">
+            <small style="color:var(--muted);">Time log activity วันนี้</small>
+            <ul id="timeLogList" class="logs">
+              <li>ยังไม่มีการ Check in / Check out</li>
+            </ul>
+          </div>
+        </div>
+
+        <div id="planSection" class="cpac-surface card hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3 style="margin:0;">แผนงานประจำวัน</h3>
+            <span id="todayLabel" class="chip ok"></span>
+          </div>
+          <p style="margin:6px 0 10px;color:var(--muted);font-size:12px;">แสดงรายการ DP ของวันปัจจุบัน (เรียงตามเวลานัดหมาย)</p>
+          <div id="dpToolbar" class="dp-toolbar hidden">
+            <p class="muted-line">กำลังโฟกัส DP ใบเดียวเพื่อป้องกันสับสน</p>
+            <button id="showAllDpBtn" class="btn ghost" type="button">กลับไปดูทุก DP</button>
+          </div>
+          <div id="dpList" class="dp-list"></div>
+          <div id="dpDetail" class="dp-detail-box hidden"></div>
+        </div>
+      </section>
+
+      <section id="page-summary" class="row-1 hidden">
+        <div class="cpac-surface card">
+          <h3 style="margin:0 0 10px;">สรุปผลการทำงานรายเดือน</h3>
+          <div class="summary-grid">
+            <div class="kpi"><small>จำนวนเที่ยวจัดส่งคอนกรีต</small><strong id="sumTrips">0</strong> เที่ยว</div>
+            <div class="kpi"><small>สรุปรายได้</small><strong id="sumIncome">0</strong> บาท</div>
+            <div class="kpi"><small>จำนวนวันทำงาน</small><strong id="sumDays">0</strong> วัน</div>
+            <div class="kpi"><small>โรงงานล่าสุดที่ปฏิบัติงาน</small><strong id="sumPlant" style="font-size:18px;">-</strong></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="factoryModal" class="overlay hidden">
+    <div class="modal">
+      <h3 id="factoryModalTitle" style="margin:0;">เลือกโรงงาน Check in</h3>
+      <div class="factory-list" id="factoryList"></div>
+      <div class="row">
+        <button id="saveFactoryBtn" class="btn primary">บันทึก</button>
+        <button id="closeFactoryBtn" class="btn ghost">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="successModal" class="overlay hidden">
+    <div class="modal">
+      <h3 style="margin:0;">บันทึกสำเร็จ</h3>
+      <div id="successText" class="detail-grid"></div>
+      <button id="closeSuccessBtn" class="btn primary">ตกลง</button>
+    </div>
+  </div>
+
+  <div id="signModal" class="overlay hidden">
+    <div class="modal">
+      <h3 style="margin:0;">เซ็นต์รับ DP</h3>
+      <canvas id="signCanvas" width="380" height="170"></canvas>
+      <div class="row">
+        <button id="clearSignBtn" class="btn ghost">ล้างลายเซ็น</button>
+        <button id="saveSignBtn" class="btn primary">ยืนยันลายเซ็น</button>
+      </div>
+      <button id="closeSignBtn" class="btn ghost">ปิด</button>
+    </div>
+  </div>
+
+  <div id="photoModal" class="overlay hidden">
+    <div class="modal">
+      <h3 style="margin:0;">บันทึกภาพ DP</h3>
+      <div class="camera-inputs">
+        <div class="mode-toggle">
+          <button id="modeCameraBtn" type="button" class="active">ถ่ายจากกล้อง</button>
+          <button id="modeAlbumBtn" type="button">แนบรูปจากอัลบั้ม</button>
+        </div>
+        <div id="cameraWrap">
+          <label>ถ่ายจากกล้อง</label>
+          <input id="captureInput" type="file" accept="image/*" capture="environment">
+        </div>
+        <div id="albumWrap" class="hidden">
+          <label>แนบรูปจากอัลบั้ม</label>
+          <input id="albumInput" type="file" accept="image/*" multiple>
+        </div>
+      </div>
+      <div>
+        <label class="label" style="margin:0 0 4px;">คำอธิบายเพิ่มเติม (ไม่บังคับ)</label>
+        <textarea id="photoNote" class="photo-note" placeholder="พิมพ์รายละเอียดภาพ เช่น สภาพหน้างาน, ปัญหาที่พบ"></textarea>
+      </div>
+      <div class="row">
+        <button id="savePhotoBtn" class="btn primary">บันทึกภาพ</button>
+        <button id="closePhotoBtn" class="btn ghost">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      checkedIn: false,
+      currentPlant: '',
+      timeLogs: [],
+      selectedFactory: '',
+      currentAction: 'checkin',
+      selectedDpId: null,
+      activeDpId: null,
+      photoTargetDpId: null,
+      dpJobs: [
+        { id:'DP-20260227-001', deliveryDate:'27-02-2026', appt:'08:30', siteCode:'K00981', siteName:'โครงการรุ่งเรือง ทาวน์โฮม', unitCode:'U-2201', unitName:'หน่วยงานบางนา', contact:'คุณวิทยา 089-111-2345', product:'คอนกรีต 280 KSC', qty:'8.0', note:'เข้าหน้าไซต์ประตู 2', lat:13.667, lng:100.612, status:'pending', images:[], signed:false },
+        { id:'DP-20260227-002', deliveryDate:'27-02-2026', appt:'10:15', siteCode:'K00844', siteName:'Site สุขุมวิท 103', unitCode:'U-2202', unitName:'หน่วยงานสุขุมวิท', contact:'คุณศิริกุล 081-443-9898', product:'คอนกรีต 240 KSC', qty:'6.0', note:'โทรแจ้งก่อนเข้าหน้างาน 20 นาที', lat:13.679, lng:100.625, status:'pending', images:[], signed:false },
+        { id:'DP-20260227-003', deliveryDate:'27-02-2026', appt:'13:40', siteCode:'K00431', siteName:'โรงงานขยายสายการผลิต', unitCode:'U-2205', unitName:'หน่วยงานศรีนครินทร์', contact:'คุณสมปอง 086-575-5555', product:'คอนกรีต 300 KSC', qty:'10.0', note:'ใช้ปั๊มบูม', lat:13.643, lng:100.661, status:'pending', images:[], signed:false }
+      ],
+      factories: [
+        { name:'โรงงานบางนา', km:3.2, company:'บจก. คอนกรีตซีแพค' },
+        { name:'โรงงานศรีนครินทร์', km:7.6, company:'บจก. คอนกรีตซีแพค' },
+        { name:'โรงงานเทพารักษ์', km:10.1, company:'บจก. คอนกรีตซีแพค' },
+        { name:'โรงงานลาดกระบัง', km:16.4, company:'บจก. คอนกรีตซีแพค' }
+      ]
+    };
+
+    const loginView = document.getElementById('loginView');
+    const appView = document.getElementById('appView');
+    const loginBtn = document.getElementById('loginBtn');
+    const statusBadge = document.getElementById('workStatus');
+    const menuButtons = document.querySelectorAll('.menu-btn');
+    const pages = {
+      profile: document.getElementById('page-profile'),
+      daily: document.getElementById('page-daily'),
+      summary: document.getElementById('page-summary')
+    };
+
+    const profileCheckInBtn = document.getElementById('profileCheckInBtn');
+    const toggleCheckBtn = document.getElementById('toggleCheckBtn');
+    const planBtn = document.getElementById('planBtn');
+    const planSection = document.getElementById('planSection');
+    const dpListEl = document.getElementById('dpList');
+    const dpDetailEl = document.getElementById('dpDetail');
+    const todayLabel = document.getElementById('todayLabel');
+    const timeLogList = document.getElementById('timeLogList');
+    const dpToolbar = document.getElementById('dpToolbar');
+    const showAllDpBtn = document.getElementById('showAllDpBtn');
+    const avatarBox = document.getElementById('avatarBox');
+    const avatarInput = document.getElementById('avatarInput');
+
+    const factoryModal = document.getElementById('factoryModal');
+    const factoryModalTitle = document.getElementById('factoryModalTitle');
+    const factoryList = document.getElementById('factoryList');
+    const saveFactoryBtn = document.getElementById('saveFactoryBtn');
+    const closeFactoryBtn = document.getElementById('closeFactoryBtn');
+
+    const successModal = document.getElementById('successModal');
+    const successText = document.getElementById('successText');
+    const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+
+    const signModal = document.getElementById('signModal');
+    const signCanvas = document.getElementById('signCanvas');
+    const clearSignBtn = document.getElementById('clearSignBtn');
+    const saveSignBtn = document.getElementById('saveSignBtn');
+    const closeSignBtn = document.getElementById('closeSignBtn');
+    const signCtx = signCanvas.getContext('2d');
+    const photoModal = document.getElementById('photoModal');
+    const modeCameraBtn = document.getElementById('modeCameraBtn');
+    const modeAlbumBtn = document.getElementById('modeAlbumBtn');
+    const cameraWrap = document.getElementById('cameraWrap');
+    const albumWrap = document.getElementById('albumWrap');
+    const captureInput = document.getElementById('captureInput');
+    const albumInput = document.getElementById('albumInput');
+    const photoNote = document.getElementById('photoNote');
+    const savePhotoBtn = document.getElementById('savePhotoBtn');
+    const closePhotoBtn = document.getElementById('closePhotoBtn');
+    let drawing = false;
+    let signatureUsed = false;
+
+    function nowStamp() {
+      const d = new Date();
+      const date = d.toLocaleDateString('th-TH');
+      const time = d.toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit' });
+      return { date, time, full: `${date} ${time}` };
+    }
+    function toHm(dateObj) {
+      return dateObj.toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit' });
+    }
+
+    function showPage(name) {
+      menuButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.page === name));
+      Object.keys(pages).forEach(key => pages[key].classList.toggle('hidden', key !== name));
+      if (name === 'summary') renderSummary();
+    }
+
+    function updateWorkStatus() {
+      statusBadge.textContent = state.checkedIn ? `Check in แล้ว (${state.currentPlant})` : 'ยังไม่ Check in';
+      profileCheckInBtn.textContent = state.checkedIn ? 'Check out ออกงาน' : 'Check in เข้างาน';
+      profileCheckInBtn.className = `btn ${state.checkedIn ? 'warn' : 'ok'}`;
+      toggleCheckBtn.textContent = state.checkedIn ? 'Check out' : 'Check in';
+      toggleCheckBtn.className = `btn ${state.checkedIn ? 'warn' : 'ok'}`;
+      planBtn.disabled = !state.checkedIn;
+    }
+
+    function renderTimeLogs() {
+      timeLogList.innerHTML = '';
+      if (state.timeLogs.length === 0) {
+        timeLogList.innerHTML = '<li>ยังไม่มีการ Check in / Check out</li>';
+        return;
+      }
+      state.timeLogs.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.type} เวลา ${item.time} (${item.plant || '-'})`;
+        timeLogList.appendChild(li);
+      });
+    }
+
+    function openFactoryModal(action) {
+      state.currentAction = action;
+      state.selectedFactory = '';
+      factoryModalTitle.textContent = action === 'checkin' ? 'เลือกโรงงาน Check in (เรียงตามระยะทาง)' : 'ยืนยันโรงงานสำหรับ Check out';
+      factoryList.innerHTML = '';
+      state.factories
+        .slice()
+        .sort((a, b) => a.km - b.km)
+        .forEach(factory => {
+          const label = document.createElement('label');
+          label.className = 'factory-item';
+          label.innerHTML = `<input type="radio" name="factory" value="${factory.name}">
+            <div><b>${factory.name}</b><div style="font-size:12px;color:var(--muted);">${factory.km} กม. · ${factory.company}</div></div>`;
+          factoryList.appendChild(label);
+        });
+      factoryModal.classList.remove('hidden');
+    }
+
+    function closeFactoryModal() { factoryModal.classList.add('hidden'); }
+    function closeSuccessModal() { successModal.classList.add('hidden'); }
+
+    function pushTimeLog(type, plant) {
+      const t = nowStamp();
+      state.timeLogs.unshift({ type, plant, date: t.date, time: t.time, full: t.full });
+      renderTimeLogs();
+    }
+
+    function showSuccess(type, plant) {
+      const t = nowStamp();
+      successText.innerHTML = `
+        <div><strong>สถานะ:</strong> ${type}</div>
+        <div><strong>วันที่:</strong> ${t.date}</div>
+        <div><strong>เวลา:</strong> ${t.time}</div>
+        <div><strong>โรงงาน:</strong> ${plant}</div>
+      `;
+      successModal.classList.remove('hidden');
+    }
+
+    const flowSteps = [
+      { key:'produced', label:'1. ผลิต' },
+      { key:'leavePlant', label:'2. ออกจากโรงงาน' },
+      { key:'arriveSite', label:'3. ถึง Site งาน' },
+      { key:'startPour', label:'4. เริ่มเทคอนกรีต' },
+      { key:'leaveSite', label:'5. ออกจาก Site งาน' },
+      { key:'arrivePlant', label:'6. ถึงโรงงาน' }
+    ];
+    function getDefaultFlowTimes(id) {
+      const map = {
+        'DP-20260227-001': { produced:'07:45', leavePlant:'08:05', arriveSite:'08:22', startPour:'08:30', leaveSite:'-', arrivePlant:'-' },
+        'DP-20260227-002': { produced:'09:40', leavePlant:'09:58', arriveSite:'10:13', startPour:'-', leaveSite:'-', arrivePlant:'-' },
+        'DP-20260227-003': { produced:'13:00', leavePlant:'13:15', arriveSite:'-', startPour:'-', leaveSite:'-', arrivePlant:'-' }
+      };
+      return map[id] || { produced:'-', leavePlant:'-', arriveSite:'-', startPour:'-', leaveSite:'-', arrivePlant:'-' };
+    }
+    const hasTime = (v) => !!v && v !== '-';
+    function renderFlow(dp) {
+      const times = dp.flowTimes || getDefaultFlowTimes(dp.id);
+      const rows = flowSteps.map(step => {
+        const time = times[step.key] || '-';
+        const doneClass = hasTime(time) ? 'done' : '';
+        return `<div class="flow-step ${doneClass}"><span class="flow-dot"></span><span class="flow-name">${step.label}</span><span class="flow-time">${time}</span></div>`;
+      }).join('');
+      return `<div class="flow">${rows}</div>`;
+    }
+
+    function renderDPList() {
+      const today = new Date();
+      todayLabel.textContent = today.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric' });
+      dpListEl.innerHTML = '';
+      const sourceJobs = state.dpJobs
+        .slice()
+        .sort((a, b) => a.appt.localeCompare(b.appt));
+      const viewJobs = state.activeDpId ? sourceJobs.filter(x => x.id === state.activeDpId) : sourceJobs;
+      dpToolbar.classList.toggle('hidden', !state.activeDpId);
+      viewJobs.forEach(dp => {
+          const card = document.createElement('div');
+          card.className = `dp-card ${state.activeDpId === dp.id ? 'current' : ''}`;
+          const statusClass = dp.signed ? 'done' : dp.status === 'working' ? 'working' : 'pending';
+          const statusText = dp.signed ? 'เสร็จสิ้น' : dp.status === 'working' ? 'กำลังดำเนินการ' : 'รอดำเนินการ';
+          const actionText = dp.signed ? 'ดูรายละเอียด' : dp.status === 'working' ? 'ดูรายละเอียด / ดำเนินการต่อ' : 'เริ่มดำเนินการ';
+          const hideActionButton = state.activeDpId === dp.id;
+          const actionBtnClass = dp.signed ? 'btn ghost' : 'btn primary';
+          card.innerHTML = `
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;">
+              <div>
+                <strong>${dp.id}</strong>
+                <div class="dp-meta">เวลา ${dp.appt} · ${dp.siteCode} ${dp.siteName}</div>
+              </div>
+              <span class="dp-status ${statusClass}">${statusText}</span>
+            </div>
+            ${hideActionButton ? '' : `<button class="${actionBtnClass}" style="width:100%;margin-top:8px;" data-open-dp="${dp.id}">${actionText}</button>`}
+          `;
+          dpListEl.appendChild(card);
+      });
+    }
+
+    function renderDPDetail(id) {
+      const dp = state.dpJobs.find(x => x.id === id);
+      if (!dp) return;
+      if (!dp.signed) state.activeDpId = id;
+      state.selectedDpId = id;
+      if (!dp.flowTimes) dp.flowTimes = getDefaultFlowTimes(dp.id);
+      if (!dp.signed && dp.status !== 'working') dp.status = 'working';
+      dpDetailEl.classList.remove('hidden');
+      dpDetailEl.innerHTML = `
+        <h3 style="margin:0 0 8px;">รายละเอียด DP</h3>
+        <div class="detail-grid">
+          <div><strong>เลข DP:</strong> ${dp.id}</div>
+          <div><strong>วันที่ส่งคอนกรีต:</strong> ${dp.deliveryDate}</div>
+          <div><strong>เวลาที่ลูกค้านัดหมาย:</strong> ${dp.appt}</div>
+          <div><strong>รหัสหน่วยงาน/ชื่อหน่วยงาน:</strong> ${dp.unitCode} ${dp.unitName}</div>
+          <div><strong>Site code:</strong> ${dp.siteCode} ${dp.siteName}</div>
+          <div><strong>ผู้ติดต่อหน้างาน:</strong> ${dp.contact}</div>
+          <div><strong>ชื่อสินค้าคอนกรีต:</strong> ${dp.product}</div>
+          <div><strong>จำนวนคิวคอนกรีต:</strong> ${dp.qty}</div>
+          <div><strong>หมายเหตุ DP:</strong> ${dp.note}</div>
+        </div>
+        ${renderFlow(dp)}
+        <div class="row" style="margin-top:10px;">
+          <a class="btn ghost" style="text-align:center;text-decoration:none;" target="_blank"
+             href="https://www.google.com/maps/dir/?api=1&destination=${dp.lat},${dp.lng}">แผนที่</a>
+          <button class="btn ghost" type="button" style="text-align:center;" data-photo-dp="${dp.id}">บันทึกภาพ</button>
+        </div>
+        <button class="btn ok" style="width:100%;margin-top:8px;" ${dp.signed ? 'disabled' : ''} data-sign-dp="${dp.id}">
+          ${dp.signed ? 'เซ็นต์รับ DP แล้ว' : 'เซ็นต์รับ DP'}
+        </button>
+        <div class="thumbs">${dp.images.map(img => `<span class="thumb"><b>${img.name}</b>${img.note ? `<small>${img.note}</small>` : ''}</span>`).join('') || '<span class="thumb">ยังไม่มีภาพ</span>'}</div>
+      `;
+      renderDPList();
+      renderSummary();
+    }
+
+    function renderSummary() {
+      const doneTrips = state.dpJobs.filter(d => d.signed).length;
+      const workDays = [...new Set(state.timeLogs.filter(l => l.type === 'Check in').map(l => l.date))].length;
+      const income = doneTrips * 850;
+      document.getElementById('sumTrips').textContent = doneTrips;
+      document.getElementById('sumIncome').textContent = income.toLocaleString('th-TH');
+      document.getElementById('sumDays').textContent = workDays;
+      document.getElementById('sumPlant').textContent = state.currentPlant || '-';
+    }
+
+    loginBtn.addEventListener('click', () => {
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value.trim();
+      if (!user || !pass) return alert('กรุณากรอก User และ Password');
+      loginView.classList.add('hidden');
+      appView.classList.remove('hidden');
+      updateWorkStatus();
+      renderTimeLogs();
+      renderDPList();
+      renderSummary();
+    });
+
+    menuButtons.forEach(btn => {
+      btn.addEventListener('click', () => showPage(btn.dataset.page));
+    });
+
+    function handleCheckInOut() {
+      if (!state.checkedIn) {
+        openFactoryModal('checkin');
+      } else {
+        pushTimeLog('Check out', state.currentPlant);
+        showSuccess('Check out สำเร็จ', state.currentPlant);
+        state.checkedIn = false;
+        state.currentPlant = '';
+        planSection.classList.add('hidden');
+        updateWorkStatus();
+        renderSummary();
+      }
+    }
+
+    profileCheckInBtn.addEventListener('click', handleCheckInOut);
+    toggleCheckBtn.addEventListener('click', handleCheckInOut);
+
+    planBtn.addEventListener('click', () => {
+      if (!state.checkedIn) return;
+      planSection.classList.remove('hidden');
+      renderDPList();
+    });
+
+    saveFactoryBtn.addEventListener('click', () => {
+      const selected = document.querySelector('input[name="factory"]:checked');
+      if (!selected) return alert('กรุณาเลือกโรงงาน');
+      state.selectedFactory = selected.value;
+      closeFactoryModal();
+      if (state.currentAction === 'checkin') {
+        state.checkedIn = true;
+        state.currentPlant = state.selectedFactory;
+        pushTimeLog('Check in', state.currentPlant);
+        showSuccess('Check in สำเร็จ', state.currentPlant);
+        updateWorkStatus();
+        renderSummary();
+      }
+    });
+
+    closeFactoryBtn.addEventListener('click', closeFactoryModal);
+    closeSuccessBtn.addEventListener('click', closeSuccessModal);
+
+    dpListEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-open-dp]');
+      if (!btn) return;
+      renderDPDetail(btn.dataset.openDp);
+    });
+
+    dpDetailEl.addEventListener('click', (e) => {
+      const photoBtn = e.target.closest('[data-photo-dp]');
+      if (photoBtn) {
+        state.photoTargetDpId = photoBtn.dataset.photoDp;
+        captureInput.value = '';
+        albumInput.value = '';
+        photoNote.value = '';
+        setPhotoMode('camera');
+        photoModal.classList.remove('hidden');
+        return;
+      }
+      const signBtn = e.target.closest('[data-sign-dp]');
+      if (!signBtn) return;
+      state.selectedDpId = signBtn.dataset.signDp;
+      signModal.classList.remove('hidden');
+      signCtx.clearRect(0, 0, signCanvas.width, signCanvas.height);
+      signatureUsed = false;
+    });
+
+    function drawStart(x, y) {
+      drawing = true;
+      signatureUsed = true;
+      signCtx.beginPath();
+      signCtx.moveTo(x, y);
+    }
+    function drawMove(x, y) {
+      if (!drawing) return;
+      signCtx.lineWidth = 2;
+      signCtx.lineCap = 'round';
+      signCtx.strokeStyle = '#213547';
+      signCtx.lineTo(x, y);
+      signCtx.stroke();
+    }
+    function drawEnd() { drawing = false; }
+    signCanvas.addEventListener('mousedown', e => drawStart(e.offsetX, e.offsetY));
+    signCanvas.addEventListener('mousemove', e => drawMove(e.offsetX, e.offsetY));
+    window.addEventListener('mouseup', drawEnd);
+    signCanvas.addEventListener('touchstart', e => {
+      const r = signCanvas.getBoundingClientRect();
+      drawStart(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top);
+      e.preventDefault();
+    }, { passive:false });
+    signCanvas.addEventListener('touchmove', e => {
+      const r = signCanvas.getBoundingClientRect();
+      drawMove(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top);
+      e.preventDefault();
+    }, { passive:false });
+    signCanvas.addEventListener('touchend', drawEnd);
+
+    clearSignBtn.addEventListener('click', () => {
+      signCtx.clearRect(0, 0, signCanvas.width, signCanvas.height);
+      signatureUsed = false;
+    });
+
+    saveSignBtn.addEventListener('click', () => {
+      if (!signatureUsed || !state.selectedDpId) return alert('กรุณาเซ็นต์ก่อนบันทึก');
+      const dp = state.dpJobs.find(x => x.id === state.selectedDpId);
+      if (!dp) return;
+      dp.signed = true;
+      dp.status = 'done';
+      if (!dp.flowTimes) dp.flowTimes = getDefaultFlowTimes(dp.id);
+      const now = new Date();
+      if (!hasTime(dp.flowTimes.leaveSite)) dp.flowTimes.leaveSite = toHm(now);
+      if (!hasTime(dp.flowTimes.arrivePlant)) dp.flowTimes.arrivePlant = toHm(new Date(now.getTime() + 35 * 60000));
+      state.activeDpId = null;
+      signModal.classList.add('hidden');
+      renderDPDetail(dp.id);
+      renderDPList();
+      renderSummary();
+      alert(`เซ็นต์รับ ${dp.id} สำเร็จ และถือว่าเสร็จสิ้นการจัดส่งแล้ว`);
+    });
+
+    closeSignBtn.addEventListener('click', () => signModal.classList.add('hidden'));
+    showAllDpBtn.addEventListener('click', () => {
+      state.activeDpId = null;
+      dpDetailEl.classList.add('hidden');
+      renderDPList();
+    });
+
+    avatarBox.addEventListener('click', () => avatarInput.click());
+    avatarInput.addEventListener('change', () => {
+      const file = avatarInput.files && avatarInput.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      avatarBox.style.backgroundImage = `url('${url}')`;
+      avatarBox.classList.add('has-photo');
+    });
+
+    function closePhotoModal() { photoModal.classList.add('hidden'); }
+    function setPhotoMode(mode){
+      const useCamera = mode === 'camera';
+      modeCameraBtn.classList.toggle('active', useCamera);
+      modeAlbumBtn.classList.toggle('active', !useCamera);
+      cameraWrap.classList.toggle('hidden', !useCamera);
+      albumWrap.classList.toggle('hidden', useCamera);
+      if (useCamera) albumInput.value = '';
+      if (!useCamera) captureInput.value = '';
+    }
+    modeCameraBtn.addEventListener('click', () => setPhotoMode('camera'));
+    modeAlbumBtn.addEventListener('click', () => setPhotoMode('album'));
+    closePhotoBtn.addEventListener('click', closePhotoModal);
+    savePhotoBtn.addEventListener('click', () => {
+      const dp = state.dpJobs.find(x => x.id === state.photoTargetDpId);
+      if (!dp) return closePhotoModal();
+      const note = photoNote.value.trim();
+      const captured = Array.from(captureInput.files || []);
+      const album = Array.from(albumInput.files || []);
+      const files = captured.concat(album);
+      if (files.length === 0) return alert('กรุณาเลือกรูปอย่างน้อย 1 รูป');
+      files.forEach(file => dp.images.push({ name: file.name, note }));
+      closePhotoModal();
+      renderDPDetail(dp.id);
+    });
+  </script>
+</body>
+</html>
+
+

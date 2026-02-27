@@ -124,15 +124,9 @@
       <label>Site code</label>
       <input placeholder="พิมพ์รหัส Site code">
     </div>
-    <div class="inline">
-      <div style="flex:1">
-        <label>ตั้งแต่วันที่</label>
-        <input type="date" value="2026-01-28">
-      </div>
-      <div style="flex:1">
-        <label>ถึงวันที่</label>
-        <input type="date" value="2026-02-04">
-      </div>
+    <div>
+      <label>วันที่</label>
+      <input type="date" value="2026-01-28">
     </div>
     <div>
       <label>สถานะงาน</label>
@@ -159,6 +153,13 @@
         <option>รอ Site ยืนยัน</option>
       </select>
     </div>
+    <div>
+      <label>เรียงตาม</label>
+      <select id="sort-mode">
+        <option value="activity-time">เวลา Update สถานะ</option>
+        <option value="customer">ลูกค้า</option>
+      </select>
+    </div>
     <div class="inline" style="margin-top: 6px;">
       <button class="button primary" style="flex:1;">ค้นหา</button>
       <button class="button ghost" style="flex:1;">ล้างตัวกรอง</button>
@@ -169,6 +170,7 @@
     <table class="table">
       <thead>
         <tr>
+          <th style="width: 170px;">เวลา Update สถานะ</th>
           <th style="width: 260px;">ลูกค้า</th>
           <th style="width: 220px;">Site code</th>
           <th>รายการสั่งคอนกรีต</th>
@@ -182,6 +184,7 @@
       <tbody>
         <!-- Customer group: เมกะโปร คอนสตรัคชั่น -->
         <tr class="group-head" data-group="c1">
+          <td class="muted">-</td>
           <td class="stack">
             <div class="customer-head">
               <button class="customer-toggle" data-group="c1">−</button>
@@ -193,6 +196,7 @@
           <td colspan="7" class="muted">คำสั่ง 2 Site code — โปรเจ็กต์ใหญ่ มีเงื่อนไขส่งกลางคืน/ถนนแคบ</td>
         </tr>
         <tr data-group="c1" class="group-child">
+          <td class="activity-log-time" data-log-datetime="28 ม.ค. 2026 เวลา 11:12">11:12</td>
           <td class="muted">&nbsp;</td>
           <td>
             <div class="site-pill">
@@ -225,6 +229,7 @@
           </td>
         </tr>
         <tr data-group="c1" class="group-child">
+          <td class="activity-log-time" data-log-datetime="28 ม.ค. 2026 เวลา 10:05">10:05</td>
           <td class="muted">&nbsp;</td>
           <td><div class="site-pill">K00452 · บ้านเดี่ยว 45</div></td>
           <td>คอนกรีต 260 KSC Slump 7</td>
@@ -250,6 +255,7 @@
 
         <!-- Customer group: กัลยทรัพย์ก่อสร้าง -->
         <tr class="group-head" data-group="c2">
+          <td class="muted">-</td>
           <td class="stack">
             <div class="customer-head">
               <button class="customer-toggle" data-group="c2">−</button>
@@ -260,6 +266,7 @@
           <td colspan="7" class="muted">คำสั่ง 1 Site code</td>
         </tr>
         <tr data-group="c2" class="group-child">
+          <td class="activity-log-time" data-log-datetime="28 ม.ค. 2026 เวลา 13:42">13:42</td>
           <td class="muted">&nbsp;</td>
           <td><div class="site-pill">K00901 · หมู่บ้านกัลป์ศรี 68</div></td>
           <td>คอนกรีต 240 KSC Slump 7</td>
@@ -285,6 +292,7 @@
 
         <!-- Customer group: เวิร์คไซต์ ดีเวลลอป -->
         <tr class="group-head" data-group="c3">
+          <td class="muted">-</td>
           <td class="stack">
             <div class="customer-head">
               <button class="customer-toggle" data-group="c3">−</button>
@@ -295,6 +303,7 @@
           <td colspan="7" class="muted">คำสั่ง 2 Site code</td>
         </tr>
         <tr data-group="c3" class="group-child">
+          <td class="activity-log-time" data-log-datetime="28 ม.ค. 2026 เวลา 18:10">18:10</td>
           <td class="muted">&nbsp;</td>
           <td><div class="site-pill">K00234 · ถนนพระราม-บางบอน</div></td>
           <td>คอนกรีต 300 KSC (Dry)</td>
@@ -322,6 +331,7 @@
           </td>
         </tr>
         <tr data-group="c3" class="group-child">
+          <td class="activity-log-time" data-log-datetime="29 ม.ค. 2026 เวลา 09:26">09:26</td>
           <td class="muted">&nbsp;</td>
           <td><div class="site-pill">K00235 · ถนนพระราม-บางบอน Phase 2</div></td>
           <td>คอนกรีต 280 KSC</td>
@@ -347,6 +357,7 @@
 
         <!-- Customer group: คุณอนุชา โฮมบิลด์ -->
         <tr class="group-head" data-group="c4">
+          <td class="muted">-</td>
           <td class="stack">
             <div class="customer-head">
               <button class="customer-toggle" data-group="c4">−</button>
@@ -357,6 +368,7 @@
           <td colspan="7" class="muted">คำสั่ง 1 Site code</td>
         </tr>
         <tr data-group="c4" class="group-child">
+          <td class="activity-log-time" data-log-datetime="28 ม.ค. 2026 เวลา 16:18">16:18</td>
           <td class="muted">&nbsp;</td>
           <td><div class="site-pill">K00088 · บ้านอนุชา ซ.10</div></td>
           <td>คอนกรีต 180 KSC</td>
@@ -379,6 +391,73 @@
     </table>
   </div>
   <script>
+    const thaiMonthMap = {
+      'ม.ค.': 0,
+      'ก.พ.': 1,
+      'มี.ค.': 2,
+      'เม.ย.': 3,
+      'พ.ค.': 4,
+      'มิ.ย.': 5,
+      'ก.ค.': 6,
+      'ส.ค.': 7,
+      'ก.ย.': 8,
+      'ต.ค.': 9,
+      'พ.ย.': 10,
+      'ธ.ค.': 11
+    };
+
+    function parseActivityDateTime(cell) {
+      if (!cell) return Number.POSITIVE_INFINITY;
+      const raw = (cell.dataset.logDatetime || cell.textContent || '').trim();
+      const match = raw.match(/(\d{1,2})\s+([^\s]+)\s+(\d{4})\s+เวลา\s+(\d{1,2}):(\d{2})/);
+      if (!match) return Number.POSITIVE_INFINITY;
+      const day = Number(match[1]);
+      const month = thaiMonthMap[match[2]];
+      const year = Number(match[3]);
+      const hour = Number(match[4]);
+      const minute = Number(match[5]);
+      if (Number.isNaN(month)) return Number.POSITIVE_INFINITY;
+      return new Date(year, month, day, hour, minute).getTime();
+    }
+
+    function collectGroups(tbody) {
+      return Array.from(tbody.querySelectorAll('tr.group-head')).map(head => {
+        const group = head.dataset.group;
+        const children = Array.from(tbody.querySelectorAll(`tr[data-group="${group}"].group-child`));
+        children.sort((a, b) => {
+          const aTime = parseActivityDateTime(a.querySelector('.activity-log-time'));
+          const bTime = parseActivityDateTime(b.querySelector('.activity-log-time'));
+          return aTime - bTime;
+        });
+        const firstTime = parseActivityDateTime(children[0]?.querySelector('.activity-log-time'));
+        const customerName = (head.querySelector('strong')?.textContent || '').trim();
+        return { head, children, firstTime, customerName };
+      });
+    }
+
+    function applySort(mode) {
+      const tbody = document.querySelector('.table tbody');
+      if (!tbody) return;
+      const groups = collectGroups(tbody);
+      if (mode === 'customer') {
+        groups.sort((a, b) => a.customerName.localeCompare(b.customerName, 'th'));
+      } else {
+        groups.sort((a, b) => a.firstTime - b.firstTime);
+      }
+      groups.forEach(({ head, children }) => {
+        tbody.appendChild(head);
+        children.forEach(row => tbody.appendChild(row));
+      });
+    }
+
+    const sortModeSelect = document.getElementById('sort-mode');
+    if (sortModeSelect) {
+      sortModeSelect.addEventListener('change', () => applySort(sortModeSelect.value));
+      applySort(sortModeSelect.value);
+    } else {
+      applySort('activity-time');
+    }
+
     // Toggle expand/collapse per customer group
     document.querySelectorAll('.customer-toggle').forEach(btn => {
       btn.addEventListener('click', () => {
